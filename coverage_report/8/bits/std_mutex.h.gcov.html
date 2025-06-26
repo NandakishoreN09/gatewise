@@ -1,0 +1,449 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - 8/bits/std_mutex.h</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">8/bits</a> - std_mutex.h<span style="font-size: 80%;"> (source / <a href="std_mutex.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryLo">14.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-12-04 16:45:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">33.3 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // std::mutex implementation -*- C++ -*-</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : // Copyright (C) 2003-2018 Free Software Foundation, Inc.
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // This file is part of the GNU ISO C++ Library.  This library is free
+<span class="lineNum">       6 </span>            : // software; you can redistribute it and/or modify it under the
+<span class="lineNum">       7 </span>            : // terms of the GNU General Public License as published by the
+<span class="lineNum">       8 </span>            : // Free Software Foundation; either version 3, or (at your option)
+<span class="lineNum">       9 </span>            : // any later version.
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : // This library is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            : // but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            : // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            : // GNU General Public License for more details.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : // Under Section 7 of GPL version 3, you are granted additional
+<span class="lineNum">      17 </span>            : // permissions described in the GCC Runtime Library Exception, version
+<span class="lineNum">      18 </span>            : // 3.1, as published by the Free Software Foundation.
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : // You should have received a copy of the GNU General Public License and
+<span class="lineNum">      21 </span>            : // a copy of the GCC Runtime Library Exception along with this program;
+<span class="lineNum">      22 </span>            : // see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<span class="lineNum">      23 </span>            : // &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : /** @file bits/std_mutex.h
+<span class="lineNum">      26 </span>            :  *  This is an internal header file, included by other library headers.
+<span class="lineNum">      27 </span>            :  *  Do not attempt to use it directly. @headername{mutex}
+<span class="lineNum">      28 </span>            :  */
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : #ifndef _GLIBCXX_MUTEX_H
+<span class="lineNum">      31 </span>            : #define _GLIBCXX_MUTEX_H 1
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : #pragma GCC system_header
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : #if __cplusplus &lt; 201103L
+<span class="lineNum">      36 </span>            : # include &lt;bits/c++0x_warning.h&gt;
+<span class="lineNum">      37 </span>            : #else
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #include &lt;system_error&gt;
+<span class="lineNum">      40 </span>            : #include &lt;bits/functexcept.h&gt;
+<span class="lineNum">      41 </span>            : #include &lt;bits/gthr.h&gt;
+<span class="lineNum">      42 </span>            : #include &lt;bits/move.h&gt; // for std::swap
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : #ifdef _GLIBCXX_USE_C99_STDINT_TR1
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : namespace std _GLIBCXX_VISIBILITY(default)
+<span class="lineNum">      47 </span>            : {
+<span class="lineNum">      48 </span>            : _GLIBCXX_BEGIN_NAMESPACE_VERSION
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :   /**
+<span class="lineNum">      51 </span>            :    * @defgroup mutexes Mutexes
+<span class="lineNum">      52 </span>            :    * @ingroup concurrency
+<span class="lineNum">      53 </span>            :    *
+<span class="lineNum">      54 </span>            :    * Classes for mutex support.
+<span class="lineNum">      55 </span>            :    * @{
+<span class="lineNum">      56 </span>            :    */
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : #ifdef _GLIBCXX_HAS_GTHREADS
+<span class="lineNum">      59 </span>            :   // Common base class for std::mutex and std::timed_mutex
+<span class="lineNum">      60 </span>            :   class __mutex_base
+<span class="lineNum">      61 </span>            :   {
+<span class="lineNum">      62 </span>            :   protected:
+<span class="lineNum">      63 </span>            :     typedef __gthread_mutex_t                   __native_type;
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            : #ifdef __GTHREAD_MUTEX_INIT
+<a name="66"><span class="lineNum">      66 </span>            :     __native_type  _M_mutex = __GTHREAD_MUTEX_INIT;</a>
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span><span class="lineCov">         68 :     constexpr __mutex_base() noexcept = default;</span>
+<span class="lineNum">      69 </span>            : #else
+<span class="lineNum">      70 </span>            :     __native_type  _M_mutex;
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            :     __mutex_base() noexcept
+<span class="lineNum">      73 </span>            :     {
+<span class="lineNum">      74 </span>            :       // XXX EAGAIN, ENOMEM, EPERM, EBUSY(may), EINVAL(may)
+<span class="lineNum">      75 </span>            :       __GTHREAD_MUTEX_INIT_FUNCTION(&amp;_M_mutex);
+<span class="lineNum">      76 </span>            :     }
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     ~__mutex_base() noexcept { __gthread_mutex_destroy(&amp;_M_mutex); }
+<span class="lineNum">      79 </span>            : #endif
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            :     __mutex_base(const __mutex_base&amp;) = delete;
+<span class="lineNum">      82 </span>            :     __mutex_base&amp; operator=(const __mutex_base&amp;) = delete;
+<span class="lineNum">      83 </span>            :   };
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            :   /// The standard mutex type.
+<span class="lineNum">      86 </span>            :   class mutex : private __mutex_base
+<span class="lineNum">      87 </span>            :   {
+<span class="lineNum">      88 </span>            :   public:
+<span class="lineNum">      89 </span>            :     typedef __native_type*                      native_handle_type;
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : #ifdef __GTHREAD_MUTEX_INIT
+<a name="92"><span class="lineNum">      92 </span>            :     constexpr</a>
+<span class="lineNum">      93 </span>            : #endif
+<span class="lineNum">      94 </span><span class="lineCov">         68 :     mutex() noexcept = default;</span>
+<span class="lineNum">      95 </span>            :     ~mutex() = default;
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :     mutex(const mutex&amp;) = delete;
+<span class="lineNum">      98 </span>            :     mutex&amp; operator=(const mutex&amp;) = delete;
+<a name="99"><span class="lineNum">      99 </span>            : </a>
+<span class="lineNum">     100 </span>            :     void
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :     lock()</span>
+<span class="lineNum">     102 </span>            :     {
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :       int __e = __gthread_mutex_lock(&amp;_M_mutex);</span>
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            :       // EINVAL, EAGAIN, EBUSY, EINVAL, EDEADLK(may)
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :       if (__e)</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :         __throw_system_error(__e);</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            :     bool
+<span class="lineNum">     111 </span>            :     try_lock() noexcept
+<span class="lineNum">     112 </span>            :     {
+<span class="lineNum">     113 </span>            :       // XXX EINVAL, EAGAIN, EBUSY
+<span class="lineNum">     114 </span>            :       return !__gthread_mutex_trylock(&amp;_M_mutex);
+<span class="lineNum">     115 </span>            :     }
+<a name="116"><span class="lineNum">     116 </span>            : </a>
+<span class="lineNum">     117 </span>            :     void
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     unlock()</span>
+<span class="lineNum">     119 </span>            :     {
+<span class="lineNum">     120 </span>            :       // XXX EINVAL, EAGAIN, EPERM
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :       __gthread_mutex_unlock(&amp;_M_mutex);</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            :     native_handle_type
+<span class="lineNum">     125 </span>            :     native_handle() noexcept
+<span class="lineNum">     126 </span>            :     { return &amp;_M_mutex; }
+<span class="lineNum">     127 </span>            :   };
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : #endif // _GLIBCXX_HAS_GTHREADS
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :   /// Do not acquire ownership of the mutex.
+<span class="lineNum">     132 </span>            :   struct defer_lock_t { explicit defer_lock_t() = default; };
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :   /// Try to acquire ownership of the mutex without blocking.
+<span class="lineNum">     135 </span>            :   struct try_to_lock_t { explicit try_to_lock_t() = default; };
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            :   /// Assume the calling thread has already obtained mutex ownership
+<span class="lineNum">     138 </span>            :   /// and manage it.
+<span class="lineNum">     139 </span>            :   struct adopt_lock_t { explicit adopt_lock_t() = default; };
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :   /// Tag used to prevent a scoped lock from acquiring ownership of a mutex.
+<span class="lineNum">     142 </span>            :   _GLIBCXX17_INLINE constexpr defer_lock_t      defer_lock { };
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :   /// Tag used to prevent a scoped lock from blocking if a mutex is locked.
+<span class="lineNum">     145 </span>            :   _GLIBCXX17_INLINE constexpr try_to_lock_t     try_to_lock { };
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            :   /// Tag used to make a scoped lock take ownership of a locked mutex.
+<span class="lineNum">     148 </span>            :   _GLIBCXX17_INLINE constexpr adopt_lock_t      adopt_lock { };
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :   /** @brief A simple scoped lock type.
+<span class="lineNum">     151 </span>            :    *
+<span class="lineNum">     152 </span>            :    * A lock_guard controls mutex ownership within a scope, releasing
+<span class="lineNum">     153 </span>            :    * ownership in the destructor.
+<span class="lineNum">     154 </span>            :    */
+<span class="lineNum">     155 </span>            :   template&lt;typename _Mutex&gt;
+<span class="lineNum">     156 </span>            :     class lock_guard
+<span class="lineNum">     157 </span>            :     {
+<span class="lineNum">     158 </span>            :     public:
+<a name="159"><span class="lineNum">     159 </span>            :       typedef _Mutex mutex_type;</a>
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 :       explicit lock_guard(mutex_type&amp; __m) : _M_device(__m)</span>
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :       { _M_device.lock(); }</span>
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            :       lock_guard(mutex_type&amp; __m, adopt_lock_t) noexcept : _M_device(__m)
+<a name="165"><span class="lineNum">     165 </span>            :       { } // calling thread owns mutex</a>
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :       ~lock_guard()</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :       { _M_device.unlock(); }</span>
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            :       lock_guard(const lock_guard&amp;) = delete;
+<span class="lineNum">     171 </span>            :       lock_guard&amp; operator=(const lock_guard&amp;) = delete;
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            :     private:
+<span class="lineNum">     174 </span>            :       mutex_type&amp;  _M_device;
+<span class="lineNum">     175 </span>            :     };
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            :   /** @brief A movable scoped lock type.
+<span class="lineNum">     178 </span>            :    *
+<span class="lineNum">     179 </span>            :    * A unique_lock controls mutex ownership within a scope. Ownership of the
+<span class="lineNum">     180 </span>            :    * mutex can be delayed until after construction and can be transferred
+<span class="lineNum">     181 </span>            :    * to another unique_lock by move construction or move assignment. If a
+<span class="lineNum">     182 </span>            :    * mutex lock is owned when the destructor runs ownership will be released.
+<span class="lineNum">     183 </span>            :    */
+<span class="lineNum">     184 </span>            :   template&lt;typename _Mutex&gt;
+<span class="lineNum">     185 </span>            :     class unique_lock
+<span class="lineNum">     186 </span>            :     {
+<span class="lineNum">     187 </span>            :     public:
+<span class="lineNum">     188 </span>            :       typedef _Mutex mutex_type;
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :       unique_lock() noexcept
+<span class="lineNum">     191 </span>            :       : _M_device(0), _M_owns(false)
+<span class="lineNum">     192 </span>            :       { }
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :       explicit unique_lock(mutex_type&amp; __m)
+<span class="lineNum">     195 </span>            :       : _M_device(std::__addressof(__m)), _M_owns(false)
+<span class="lineNum">     196 </span>            :       {
+<span class="lineNum">     197 </span>            :         lock();
+<span class="lineNum">     198 </span>            :         _M_owns = true;
+<span class="lineNum">     199 </span>            :       }
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            :       unique_lock(mutex_type&amp; __m, defer_lock_t) noexcept
+<span class="lineNum">     202 </span>            :       : _M_device(std::__addressof(__m)), _M_owns(false)
+<span class="lineNum">     203 </span>            :       { }
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            :       unique_lock(mutex_type&amp; __m, try_to_lock_t)
+<span class="lineNum">     206 </span>            :       : _M_device(std::__addressof(__m)), _M_owns(_M_device-&gt;try_lock())
+<span class="lineNum">     207 </span>            :       { }
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span>            :       unique_lock(mutex_type&amp; __m, adopt_lock_t) noexcept
+<span class="lineNum">     210 </span>            :       : _M_device(std::__addressof(__m)), _M_owns(true)
+<span class="lineNum">     211 </span>            :       {
+<span class="lineNum">     212 </span>            :         // XXX calling thread owns mutex
+<span class="lineNum">     213 </span>            :       }
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :       template&lt;typename _Clock, typename _Duration&gt;
+<span class="lineNum">     216 </span>            :         unique_lock(mutex_type&amp; __m,
+<span class="lineNum">     217 </span>            :                     const chrono::time_point&lt;_Clock, _Duration&gt;&amp; __atime)
+<span class="lineNum">     218 </span>            :         : _M_device(std::__addressof(__m)),
+<span class="lineNum">     219 </span>            :           _M_owns(_M_device-&gt;try_lock_until(__atime))
+<span class="lineNum">     220 </span>            :         { }
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            :       template&lt;typename _Rep, typename _Period&gt;
+<span class="lineNum">     223 </span>            :         unique_lock(mutex_type&amp; __m,
+<span class="lineNum">     224 </span>            :                     const chrono::duration&lt;_Rep, _Period&gt;&amp; __rtime)
+<span class="lineNum">     225 </span>            :         : _M_device(std::__addressof(__m)),
+<span class="lineNum">     226 </span>            :           _M_owns(_M_device-&gt;try_lock_for(__rtime))
+<span class="lineNum">     227 </span>            :         { }
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :       ~unique_lock()
+<span class="lineNum">     230 </span>            :       {
+<span class="lineNum">     231 </span>            :         if (_M_owns)
+<span class="lineNum">     232 </span>            :           unlock();
+<span class="lineNum">     233 </span>            :       }
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :       unique_lock(const unique_lock&amp;) = delete;
+<span class="lineNum">     236 </span>            :       unique_lock&amp; operator=(const unique_lock&amp;) = delete;
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :       unique_lock(unique_lock&amp;&amp; __u) noexcept
+<span class="lineNum">     239 </span>            :       : _M_device(__u._M_device), _M_owns(__u._M_owns)
+<span class="lineNum">     240 </span>            :       {
+<span class="lineNum">     241 </span>            :         __u._M_device = 0;
+<span class="lineNum">     242 </span>            :         __u._M_owns = false;
+<span class="lineNum">     243 </span>            :       }
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :       unique_lock&amp; operator=(unique_lock&amp;&amp; __u) noexcept
+<span class="lineNum">     246 </span>            :       {
+<span class="lineNum">     247 </span>            :         if(_M_owns)
+<span class="lineNum">     248 </span>            :           unlock();
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :         unique_lock(std::move(__u)).swap(*this);
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :         __u._M_device = 0;
+<span class="lineNum">     253 </span>            :         __u._M_owns = false;
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :         return *this;
+<span class="lineNum">     256 </span>            :       }
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            :       void
+<span class="lineNum">     259 </span>            :       lock()
+<span class="lineNum">     260 </span>            :       {
+<span class="lineNum">     261 </span>            :         if (!_M_device)
+<span class="lineNum">     262 </span>            :           __throw_system_error(int(errc::operation_not_permitted));
+<span class="lineNum">     263 </span>            :         else if (_M_owns)
+<span class="lineNum">     264 </span>            :           __throw_system_error(int(errc::resource_deadlock_would_occur));
+<span class="lineNum">     265 </span>            :         else
+<span class="lineNum">     266 </span>            :           {
+<span class="lineNum">     267 </span>            :             _M_device-&gt;lock();
+<span class="lineNum">     268 </span>            :             _M_owns = true;
+<span class="lineNum">     269 </span>            :           }
+<span class="lineNum">     270 </span>            :       }
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            :       bool
+<span class="lineNum">     273 </span>            :       try_lock()
+<span class="lineNum">     274 </span>            :       {
+<span class="lineNum">     275 </span>            :         if (!_M_device)
+<span class="lineNum">     276 </span>            :           __throw_system_error(int(errc::operation_not_permitted));
+<span class="lineNum">     277 </span>            :         else if (_M_owns)
+<span class="lineNum">     278 </span>            :           __throw_system_error(int(errc::resource_deadlock_would_occur));
+<span class="lineNum">     279 </span>            :         else
+<span class="lineNum">     280 </span>            :           {
+<span class="lineNum">     281 </span>            :             _M_owns = _M_device-&gt;try_lock();
+<span class="lineNum">     282 </span>            :             return _M_owns;
+<span class="lineNum">     283 </span>            :           }
+<span class="lineNum">     284 </span>            :       }
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span>            :       template&lt;typename _Clock, typename _Duration&gt;
+<span class="lineNum">     287 </span>            :         bool
+<span class="lineNum">     288 </span>            :         try_lock_until(const chrono::time_point&lt;_Clock, _Duration&gt;&amp; __atime)
+<span class="lineNum">     289 </span>            :         {
+<span class="lineNum">     290 </span>            :           if (!_M_device)
+<span class="lineNum">     291 </span>            :             __throw_system_error(int(errc::operation_not_permitted));
+<span class="lineNum">     292 </span>            :           else if (_M_owns)
+<span class="lineNum">     293 </span>            :             __throw_system_error(int(errc::resource_deadlock_would_occur));
+<span class="lineNum">     294 </span>            :           else
+<span class="lineNum">     295 </span>            :             {
+<span class="lineNum">     296 </span>            :               _M_owns = _M_device-&gt;try_lock_until(__atime);
+<span class="lineNum">     297 </span>            :               return _M_owns;
+<span class="lineNum">     298 </span>            :             }
+<span class="lineNum">     299 </span>            :         }
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :       template&lt;typename _Rep, typename _Period&gt;
+<span class="lineNum">     302 </span>            :         bool
+<span class="lineNum">     303 </span>            :         try_lock_for(const chrono::duration&lt;_Rep, _Period&gt;&amp; __rtime)
+<span class="lineNum">     304 </span>            :         {
+<span class="lineNum">     305 </span>            :           if (!_M_device)
+<span class="lineNum">     306 </span>            :             __throw_system_error(int(errc::operation_not_permitted));
+<span class="lineNum">     307 </span>            :           else if (_M_owns)
+<span class="lineNum">     308 </span>            :             __throw_system_error(int(errc::resource_deadlock_would_occur));
+<span class="lineNum">     309 </span>            :           else
+<span class="lineNum">     310 </span>            :             {
+<span class="lineNum">     311 </span>            :               _M_owns = _M_device-&gt;try_lock_for(__rtime);
+<span class="lineNum">     312 </span>            :               return _M_owns;
+<span class="lineNum">     313 </span>            :             }
+<span class="lineNum">     314 </span>            :          }
+<span class="lineNum">     315 </span>            : 
+<span class="lineNum">     316 </span>            :       void
+<span class="lineNum">     317 </span>            :       unlock()
+<span class="lineNum">     318 </span>            :       {
+<span class="lineNum">     319 </span>            :         if (!_M_owns)
+<span class="lineNum">     320 </span>            :           __throw_system_error(int(errc::operation_not_permitted));
+<span class="lineNum">     321 </span>            :         else if (_M_device)
+<span class="lineNum">     322 </span>            :           {
+<span class="lineNum">     323 </span>            :             _M_device-&gt;unlock();
+<span class="lineNum">     324 </span>            :             _M_owns = false;
+<span class="lineNum">     325 </span>            :           }
+<span class="lineNum">     326 </span>            :       }
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            :       void
+<span class="lineNum">     329 </span>            :       swap(unique_lock&amp; __u) noexcept
+<span class="lineNum">     330 </span>            :       {
+<span class="lineNum">     331 </span>            :         std::swap(_M_device, __u._M_device);
+<span class="lineNum">     332 </span>            :         std::swap(_M_owns, __u._M_owns);
+<span class="lineNum">     333 </span>            :       }
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            :       mutex_type*
+<span class="lineNum">     336 </span>            :       release() noexcept
+<span class="lineNum">     337 </span>            :       {
+<span class="lineNum">     338 </span>            :         mutex_type* __ret = _M_device;
+<span class="lineNum">     339 </span>            :         _M_device = 0;
+<span class="lineNum">     340 </span>            :         _M_owns = false;
+<span class="lineNum">     341 </span>            :         return __ret;
+<span class="lineNum">     342 </span>            :       }
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            :       bool
+<span class="lineNum">     345 </span>            :       owns_lock() const noexcept
+<span class="lineNum">     346 </span>            :       { return _M_owns; }
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span>            :       explicit operator bool() const noexcept
+<span class="lineNum">     349 </span>            :       { return owns_lock(); }
+<span class="lineNum">     350 </span>            : 
+<span class="lineNum">     351 </span>            :       mutex_type*
+<span class="lineNum">     352 </span>            :       mutex() const noexcept
+<span class="lineNum">     353 </span>            :       { return _M_device; }
+<span class="lineNum">     354 </span>            : 
+<span class="lineNum">     355 </span>            :     private:
+<span class="lineNum">     356 </span>            :       mutex_type*       _M_device;
+<span class="lineNum">     357 </span>            :       bool              _M_owns; // XXX use atomic_bool
+<span class="lineNum">     358 </span>            :     };
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span>            :   /// Swap overload for unique_lock objects.
+<span class="lineNum">     361 </span>            :   template&lt;typename _Mutex&gt;
+<span class="lineNum">     362 </span>            :     inline void
+<span class="lineNum">     363 </span>            :     swap(unique_lock&lt;_Mutex&gt;&amp; __x, unique_lock&lt;_Mutex&gt;&amp; __y) noexcept
+<span class="lineNum">     364 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     365 </span>            : 
+<span class="lineNum">     366 </span>            :   // @} group mutexes
+<span class="lineNum">     367 </span>            : _GLIBCXX_END_NAMESPACE_VERSION
+<span class="lineNum">     368 </span>            : } // namespace
+<span class="lineNum">     369 </span>            : #endif // _GLIBCXX_USE_C99_STDINT_TR1
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span>            : #endif // C++11
+<span class="lineNum">     372 </span>            : 
+<span class="lineNum">     373 </span>            : #endif // _GLIBCXX_MUTEX_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

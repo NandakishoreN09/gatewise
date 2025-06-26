@@ -1,0 +1,565 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/gmock/internal/gmock-internal-utils.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/gmock/internal</a> - gmock-internal-utils.h<span style="font-size: 80%;"> (source / <a href="gmock-internal-utils.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntryMed">82.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-12-04 16:45:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryMed">83.3 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright 2007, Google Inc.</a>
+<span class="lineNum">       2 </span>            : // All rights reserved.
+<span class="lineNum">       3 </span>            : //
+<span class="lineNum">       4 </span>            : // Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       5 </span>            : // modification, are permitted provided that the following conditions are
+<span class="lineNum">       6 </span>            : // met:
+<span class="lineNum">       7 </span>            : //
+<span class="lineNum">       8 </span>            : //     * Redistributions of source code must retain the above copyright
+<span class="lineNum">       9 </span>            : // notice, this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>            : //     * Redistributions in binary form must reproduce the above
+<span class="lineNum">      11 </span>            : // copyright notice, this list of conditions and the following disclaimer
+<span class="lineNum">      12 </span>            : // in the documentation and/or other materials provided with the
+<span class="lineNum">      13 </span>            : // distribution.
+<span class="lineNum">      14 </span>            : //     * Neither the name of Google Inc. nor the names of its
+<span class="lineNum">      15 </span>            : // contributors may be used to endorse or promote products derived from
+<span class="lineNum">      16 </span>            : // this software without specific prior written permission.
+<span class="lineNum">      17 </span>            : //
+<span class="lineNum">      18 </span>            : // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+<span class="lineNum">      19 </span>            : // &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+<span class="lineNum">      20 </span>            : // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+<span class="lineNum">      21 </span>            : // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+<span class="lineNum">      22 </span>            : // OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<span class="lineNum">      23 </span>            : // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<span class="lineNum">      24 </span>            : // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+<span class="lineNum">      25 </span>            : // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+<span class="lineNum">      26 </span>            : // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+<span class="lineNum">      27 </span>            : // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+<span class="lineNum">      28 </span>            : // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : // Google Mock - a framework for writing C++ mock classes.
+<span class="lineNum">      31 </span>            : //
+<span class="lineNum">      32 </span>            : // This file defines some utilities useful for implementing Google
+<span class="lineNum">      33 </span>            : // Mock.  They are subject to change without notice, so please DO NOT
+<span class="lineNum">      34 </span>            : // USE THEM IN USER CODE.
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : // IWYU pragma: private, include &quot;gmock/gmock.h&quot;
+<span class="lineNum">      37 </span>            : // IWYU pragma: friend gmock/.*
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #ifndef GOOGLEMOCK_INCLUDE_GMOCK_INTERNAL_GMOCK_INTERNAL_UTILS_H_
+<span class="lineNum">      40 </span>            : #define GOOGLEMOCK_INCLUDE_GMOCK_INTERNAL_GMOCK_INTERNAL_UTILS_H_
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : #include &lt;ostream&gt;  // NOLINT
+<span class="lineNum">      45 </span>            : #include &lt;string&gt;
+<span class="lineNum">      46 </span>            : #include &lt;type_traits&gt;
+<span class="lineNum">      47 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      48 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : #include &quot;gmock/internal/gmock-port.h&quot;
+<span class="lineNum">      51 </span>            : #include &quot;gtest/gtest.h&quot;
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : namespace testing {
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : template &lt;typename&gt;
+<span class="lineNum">      56 </span>            : class Matcher;
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : namespace internal {
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : // Silence MSVC C4100 (unreferenced formal parameter) and
+<span class="lineNum">      61 </span>            : // C4805('==': unsafe mix of type 'const int' and type 'const bool')
+<span class="lineNum">      62 </span>            : GTEST_DISABLE_MSC_WARNINGS_PUSH_(4100 4805)
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : // Joins a vector of strings as if they are fields of a tuple; returns
+<span class="lineNum">      65 </span>            : // the joined string.
+<span class="lineNum">      66 </span>            : GTEST_API_ std::string JoinAsKeyValueTuple(
+<span class="lineNum">      67 </span>            :     const std::vector&lt;const char*&gt;&amp; names, const Strings&amp; values);
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : // Converts an identifier name to a space-separated list of lower-case
+<span class="lineNum">      70 </span>            : // words.  Each maximum substring of the form [A-Za-z][a-z]*|\d+ is
+<span class="lineNum">      71 </span>            : // treated as one word.  For example, both &quot;FooBar123&quot; and
+<span class="lineNum">      72 </span>            : // &quot;foo_bar_123&quot; are converted to &quot;foo bar 123&quot;.
+<span class="lineNum">      73 </span>            : GTEST_API_ std::string ConvertIdentifierNameToWords(const char* id_name);
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : // GetRawPointer(p) returns the raw pointer underlying p when p is a
+<span class="lineNum">      76 </span>            : // smart pointer, or returns p itself when p is already a raw pointer.
+<span class="lineNum">      77 </span>            : // The following default implementation is for the smart pointer case.
+<span class="lineNum">      78 </span>            : template &lt;typename Pointer&gt;
+<span class="lineNum">      79 </span>            : inline const typename Pointer::element_type* GetRawPointer(const Pointer&amp; p) {
+<span class="lineNum">      80 </span>            :   return p.get();
+<span class="lineNum">      81 </span>            : }
+<span class="lineNum">      82 </span>            : // This overload version is for std::reference_wrapper, which does not work with
+<span class="lineNum">      83 </span>            : // the overload above, as it does not have an `element_type`.
+<span class="lineNum">      84 </span>            : template &lt;typename Element&gt;
+<span class="lineNum">      85 </span>            : inline const Element* GetRawPointer(const std::reference_wrapper&lt;Element&gt;&amp; r) {
+<span class="lineNum">      86 </span>            :   return &amp;r.get();
+<span class="lineNum">      87 </span>            : }
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : // This overloaded version is for the raw pointer case.
+<span class="lineNum">      90 </span>            : template &lt;typename Element&gt;
+<span class="lineNum">      91 </span>            : inline Element* GetRawPointer(Element* p) {
+<span class="lineNum">      92 </span>            :   return p;
+<span class="lineNum">      93 </span>            : }
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : // Default definitions for all compilers.
+<span class="lineNum">      96 </span>            : // NOTE: If you implement support for other compilers, make sure to avoid
+<span class="lineNum">      97 </span>            : // unexpected overlaps.
+<span class="lineNum">      98 </span>            : // (e.g., Clang also processes #pragma GCC, and clang-cl also handles _MSC_VER.)
+<span class="lineNum">      99 </span>            : #define GMOCK_INTERNAL_WARNING_PUSH()
+<span class="lineNum">     100 </span>            : #define GMOCK_INTERNAL_WARNING_CLANG(Level, Name)
+<span class="lineNum">     101 </span>            : #define GMOCK_INTERNAL_WARNING_POP()
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : #if defined(__clang__)
+<span class="lineNum">     104 </span>            : #undef GMOCK_INTERNAL_WARNING_PUSH
+<span class="lineNum">     105 </span>            : #define GMOCK_INTERNAL_WARNING_PUSH() _Pragma(&quot;clang diagnostic push&quot;)
+<span class="lineNum">     106 </span>            : #undef GMOCK_INTERNAL_WARNING_CLANG
+<span class="lineNum">     107 </span>            : #define GMOCK_INTERNAL_WARNING_CLANG(Level, Warning) \
+<span class="lineNum">     108 </span>            :   _Pragma(GMOCK_PP_INTERNAL_STRINGIZE(clang diagnostic Level Warning))
+<span class="lineNum">     109 </span>            : #undef GMOCK_INTERNAL_WARNING_POP
+<span class="lineNum">     110 </span>            : #define GMOCK_INTERNAL_WARNING_POP() _Pragma(&quot;clang diagnostic pop&quot;)
+<span class="lineNum">     111 </span>            : #endif
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : // MSVC treats wchar_t as a native type usually, but treats it as the
+<span class="lineNum">     114 </span>            : // same as unsigned short when the compiler option /Zc:wchar_t- is
+<span class="lineNum">     115 </span>            : // specified.  It defines _NATIVE_WCHAR_T_DEFINED symbol when wchar_t
+<span class="lineNum">     116 </span>            : // is a native type.
+<span class="lineNum">     117 </span>            : #if defined(_MSC_VER) &amp;&amp; !defined(_NATIVE_WCHAR_T_DEFINED)
+<span class="lineNum">     118 </span>            : // wchar_t is a typedef.
+<span class="lineNum">     119 </span>            : #else
+<span class="lineNum">     120 </span>            : #define GMOCK_WCHAR_T_IS_NATIVE_ 1
+<span class="lineNum">     121 </span>            : #endif
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : // In what follows, we use the term &quot;kind&quot; to indicate whether a type
+<span class="lineNum">     124 </span>            : // is bool, an integer type (excluding bool), a floating-point type,
+<span class="lineNum">     125 </span>            : // or none of them.  This categorization is useful for determining
+<span class="lineNum">     126 </span>            : // when a matcher argument type can be safely converted to another
+<span class="lineNum">     127 </span>            : // type in the implementation of SafeMatcherCast.
+<span class="lineNum">     128 </span>            : enum TypeKind { kBool, kInteger, kFloatingPoint, kOther };
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : // KindOf&lt;T&gt;::value is the kind of type T.
+<span class="lineNum">     131 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     132 </span>            : struct KindOf {
+<span class="lineNum">     133 </span>            :   enum { value = kOther };  // The default kind.
+<span class="lineNum">     134 </span>            : };
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : // This macro declares that the kind of 'type' is 'kind'.
+<span class="lineNum">     137 </span>            : #define GMOCK_DECLARE_KIND_(type, kind) \
+<span class="lineNum">     138 </span>            :   template &lt;&gt;                           \
+<span class="lineNum">     139 </span>            :   struct KindOf&lt;type&gt; {                 \
+<span class="lineNum">     140 </span>            :     enum { value = kind };              \
+<span class="lineNum">     141 </span>            :   }
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : GMOCK_DECLARE_KIND_(bool, kBool);
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : // All standard integer types.
+<span class="lineNum">     146 </span>            : GMOCK_DECLARE_KIND_(char, kInteger);
+<span class="lineNum">     147 </span>            : GMOCK_DECLARE_KIND_(signed char, kInteger);
+<span class="lineNum">     148 </span>            : GMOCK_DECLARE_KIND_(unsigned char, kInteger);
+<span class="lineNum">     149 </span>            : GMOCK_DECLARE_KIND_(short, kInteger);           // NOLINT
+<span class="lineNum">     150 </span>            : GMOCK_DECLARE_KIND_(unsigned short, kInteger);  // NOLINT
+<span class="lineNum">     151 </span>            : GMOCK_DECLARE_KIND_(int, kInteger);
+<span class="lineNum">     152 </span>            : GMOCK_DECLARE_KIND_(unsigned int, kInteger);
+<span class="lineNum">     153 </span>            : GMOCK_DECLARE_KIND_(long, kInteger);                // NOLINT
+<span class="lineNum">     154 </span>            : GMOCK_DECLARE_KIND_(unsigned long, kInteger);       // NOLINT
+<span class="lineNum">     155 </span>            : GMOCK_DECLARE_KIND_(long long, kInteger);           // NOLINT
+<span class="lineNum">     156 </span>            : GMOCK_DECLARE_KIND_(unsigned long long, kInteger);  // NOLINT
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            : #if GMOCK_WCHAR_T_IS_NATIVE_
+<span class="lineNum">     159 </span>            : GMOCK_DECLARE_KIND_(wchar_t, kInteger);
+<span class="lineNum">     160 </span>            : #endif
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : // All standard floating-point types.
+<span class="lineNum">     163 </span>            : GMOCK_DECLARE_KIND_(float, kFloatingPoint);
+<span class="lineNum">     164 </span>            : GMOCK_DECLARE_KIND_(double, kFloatingPoint);
+<span class="lineNum">     165 </span>            : GMOCK_DECLARE_KIND_(long double, kFloatingPoint);
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            : #undef GMOCK_DECLARE_KIND_
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : // Evaluates to the kind of 'type'.
+<span class="lineNum">     170 </span>            : #define GMOCK_KIND_OF_(type)                   \
+<span class="lineNum">     171 </span>            :   static_cast&lt; ::testing::internal::TypeKind&gt;( \
+<span class="lineNum">     172 </span>            :       ::testing::internal::KindOf&lt;type&gt;::value)
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            : // LosslessArithmeticConvertibleImpl&lt;kFromKind, From, kToKind, To&gt;::value
+<span class="lineNum">     175 </span>            : // is true if and only if arithmetic type From can be losslessly converted to
+<span class="lineNum">     176 </span>            : // arithmetic type To.
+<span class="lineNum">     177 </span>            : //
+<span class="lineNum">     178 </span>            : // It's the user's responsibility to ensure that both From and To are
+<span class="lineNum">     179 </span>            : // raw (i.e. has no CV modifier, is not a pointer, and is not a
+<span class="lineNum">     180 </span>            : // reference) built-in arithmetic types, kFromKind is the kind of
+<span class="lineNum">     181 </span>            : // From, and kToKind is the kind of To; the value is
+<span class="lineNum">     182 </span>            : // implementation-defined when the above pre-condition is violated.
+<span class="lineNum">     183 </span>            : template &lt;TypeKind kFromKind, typename From, TypeKind kToKind, typename To&gt;
+<span class="lineNum">     184 </span>            : using LosslessArithmeticConvertibleImpl = std::integral_constant&lt;
+<span class="lineNum">     185 </span>            :     bool,
+<span class="lineNum">     186 </span>            :     // clang-format off
+<span class="lineNum">     187 </span>            :       // Converting from bool is always lossless
+<span class="lineNum">     188 </span>            :       (kFromKind == kBool) ? true
+<span class="lineNum">     189 </span>            :       // Converting between any other type kinds will be lossy if the type
+<span class="lineNum">     190 </span>            :       // kinds are not the same.
+<span class="lineNum">     191 </span>            :     : (kFromKind != kToKind) ? false
+<span class="lineNum">     192 </span>            :     : (kFromKind == kInteger &amp;&amp;
+<span class="lineNum">     193 </span>            :        // Converting between integers of different widths is allowed so long
+<span class="lineNum">     194 </span>            :        // as the conversion does not go from signed to unsigned.
+<span class="lineNum">     195 </span>            :       (((sizeof(From) &lt; sizeof(To)) &amp;&amp;
+<span class="lineNum">     196 </span>            :         !(std::is_signed&lt;From&gt;::value &amp;&amp; !std::is_signed&lt;To&gt;::value)) ||
+<span class="lineNum">     197 </span>            :        // Converting between integers of the same width only requires the
+<span class="lineNum">     198 </span>            :        // two types to have the same signedness.
+<span class="lineNum">     199 </span>            :        ((sizeof(From) == sizeof(To)) &amp;&amp;
+<span class="lineNum">     200 </span>            :         (std::is_signed&lt;From&gt;::value == std::is_signed&lt;To&gt;::value)))
+<span class="lineNum">     201 </span>            :        ) ? true
+<span class="lineNum">     202 </span>            :       // Floating point conversions are lossless if and only if `To` is at least
+<span class="lineNum">     203 </span>            :       // as wide as `From`.
+<span class="lineNum">     204 </span>            :     : (kFromKind == kFloatingPoint &amp;&amp; (sizeof(From) &lt;= sizeof(To))) ? true
+<span class="lineNum">     205 </span>            :     : false
+<span class="lineNum">     206 </span>            :     // clang-format on
+<span class="lineNum">     207 </span>            :     &gt;;
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span>            : // LosslessArithmeticConvertible&lt;From, To&gt;::value is true if and only if
+<span class="lineNum">     210 </span>            : // arithmetic type From can be losslessly converted to arithmetic type To.
+<span class="lineNum">     211 </span>            : //
+<span class="lineNum">     212 </span>            : // It's the user's responsibility to ensure that both From and To are
+<span class="lineNum">     213 </span>            : // raw (i.e. has no CV modifier, is not a pointer, and is not a
+<span class="lineNum">     214 </span>            : // reference) built-in arithmetic types; the value is
+<span class="lineNum">     215 </span>            : // implementation-defined when the above pre-condition is violated.
+<span class="lineNum">     216 </span>            : template &lt;typename From, typename To&gt;
+<span class="lineNum">     217 </span>            : using LosslessArithmeticConvertible =
+<span class="lineNum">     218 </span>            :     LosslessArithmeticConvertibleImpl&lt;GMOCK_KIND_OF_(From), From,
+<span class="lineNum">     219 </span>            :                                       GMOCK_KIND_OF_(To), To&gt;;
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            : // This interface knows how to report a Google Mock failure (either
+<span class="lineNum">     222 </span>            : // non-fatal or fatal).
+<span class="lineNum">     223 </span>            : class FailureReporterInterface {
+<span class="lineNum">     224 </span>            :  public:
+<span class="lineNum">     225 </span>            :   // The type of a failure (either non-fatal or fatal).
+<span class="lineNum">     226 </span>            :   enum FailureType { kNonfatal, kFatal };
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :   virtual ~FailureReporterInterface() = default;
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            :   // Reports a failure that occurred at the given source file location.
+<span class="lineNum">     231 </span>            :   virtual void ReportFailure(FailureType type, const char* file, int line,
+<span class="lineNum">     232 </span>            :                              const std::string&amp; message) = 0;
+<span class="lineNum">     233 </span>            : };
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            : // Returns the failure reporter used by Google Mock.
+<span class="lineNum">     236 </span>            : GTEST_API_ FailureReporterInterface* GetFailureReporter();
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            : // Asserts that condition is true; aborts the process with the given
+<span class="lineNum">     239 </span>            : // message if condition is false.  We cannot use LOG(FATAL) or CHECK()
+<span class="lineNum">     240 </span>            : // as Google Mock might be used to mock the log sink itself.  We
+<a name="241"><span class="lineNum">     241 </span>            : // inline this function to prevent it from showing up in the stack</a>
+<span class="lineNum">     242 </span>            : // trace.
+<span class="lineNum">     243 </span><span class="lineCov">       4182 : inline void Assert(bool condition, const char* file, int line,</span>
+<span class="lineNum">     244 </span>            :                    const std::string&amp; msg) {
+<span class="lineNum">     245 </span><span class="lineCov">       4182 :   if (!condition) {</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :     GetFailureReporter()-&gt;ReportFailure(FailureReporterInterface::kFatal, file,</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :                                         line, msg);</span>
+<span class="lineNum">     248 </span>            :   }
+<span class="lineNum">     249 </span><span class="lineCov">       4182 : }</span>
+<span class="lineNum">     250 </span>            : inline void Assert(bool condition, const char* file, int line) {
+<span class="lineNum">     251 </span>            :   Assert(condition, file, line, &quot;Assertion failed.&quot;);
+<span class="lineNum">     252 </span>            : }
+<span class="lineNum">     253 </span>            : 
+<a name="254"><span class="lineNum">     254 </span>            : // Verifies that condition is true; generates a non-fatal failure if</a>
+<span class="lineNum">     255 </span>            : // condition is false.
+<span class="lineNum">     256 </span><span class="lineCov">         30 : inline void Expect(bool condition, const char* file, int line,</span>
+<span class="lineNum">     257 </span>            :                    const std::string&amp; msg) {
+<span class="lineNum">     258 </span><span class="lineCov">         30 :   if (!condition) {</span>
+<span class="lineNum">     259 </span><span class="lineCov">          2 :     GetFailureReporter()-&gt;ReportFailure(FailureReporterInterface::kNonfatal,</span>
+<span class="lineNum">     260 </span><span class="lineCov">          2 :                                         file, line, msg);</span>
+<span class="lineNum">     261 </span>            :   }
+<span class="lineNum">     262 </span><span class="lineCov">         30 : }</span>
+<span class="lineNum">     263 </span>            : inline void Expect(bool condition, const char* file, int line) {
+<span class="lineNum">     264 </span>            :   Expect(condition, file, line, &quot;Expectation failed.&quot;);
+<span class="lineNum">     265 </span>            : }
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            : // Severity level of a log.
+<span class="lineNum">     268 </span>            : enum LogSeverity { kInfo = 0, kWarning = 1 };
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            : // Valid values for the --gmock_verbose flag.
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : // All logs (informational and warnings) are printed.
+<span class="lineNum">     273 </span>            : const char kInfoVerbosity[] = &quot;info&quot;;
+<span class="lineNum">     274 </span>            : // Only warnings are printed.
+<span class="lineNum">     275 </span>            : const char kWarningVerbosity[] = &quot;warning&quot;;
+<span class="lineNum">     276 </span>            : // No logs are printed.
+<span class="lineNum">     277 </span>            : const char kErrorVerbosity[] = &quot;error&quot;;
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            : // Returns true if and only if a log with the given severity is visible
+<span class="lineNum">     280 </span>            : // according to the --gmock_verbose flag.
+<span class="lineNum">     281 </span>            : GTEST_API_ bool LogIsVisible(LogSeverity severity);
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span>            : // Prints the given message to stdout if and only if 'severity' &gt;= the level
+<span class="lineNum">     284 </span>            : // specified by the --gmock_verbose flag.  If stack_frames_to_skip &gt;=
+<span class="lineNum">     285 </span>            : // 0, also prints the stack trace excluding the top
+<span class="lineNum">     286 </span>            : // stack_frames_to_skip frames.  In opt mode, any positive
+<span class="lineNum">     287 </span>            : // stack_frames_to_skip is treated as 0, since we don't know which
+<span class="lineNum">     288 </span>            : // function calls will be inlined by the compiler and need to be
+<span class="lineNum">     289 </span>            : // conservative.
+<span class="lineNum">     290 </span>            : GTEST_API_ void Log(LogSeverity severity, const std::string&amp; message,
+<span class="lineNum">     291 </span>            :                     int stack_frames_to_skip);
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            : // A marker class that is used to resolve parameterless expectations to the
+<span class="lineNum">     294 </span>            : // correct overload. This must not be instantiable, to prevent client code from
+<span class="lineNum">     295 </span>            : // accidentally resolving to the overload; for example:
+<span class="lineNum">     296 </span>            : //
+<span class="lineNum">     297 </span>            : //    ON_CALL(mock, Method({}, nullptr))...
+<span class="lineNum">     298 </span>            : //
+<span class="lineNum">     299 </span>            : class WithoutMatchers {
+<span class="lineNum">     300 </span>            :  private:
+<span class="lineNum">     301 </span>            :   WithoutMatchers() {}
+<span class="lineNum">     302 </span>            :   friend GTEST_API_ WithoutMatchers GetWithoutMatchers();
+<span class="lineNum">     303 </span>            : };
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            : // Internal use only: access the singleton instance of WithoutMatchers.
+<span class="lineNum">     306 </span>            : GTEST_API_ WithoutMatchers GetWithoutMatchers();
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span>            : // Invalid&lt;T&gt;() is usable as an expression of type T, but will terminate
+<span class="lineNum">     309 </span>            : // the program with an assertion failure if actually run.  This is useful
+<span class="lineNum">     310 </span>            : // when a value of type T is needed for compilation, but the statement
+<span class="lineNum">     311 </span>            : // will not really be executed (or we don't care if the statement
+<span class="lineNum">     312 </span>            : // crashes).
+<span class="lineNum">     313 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     314 </span>            : inline T Invalid() {
+<span class="lineNum">     315 </span>            :   Assert(/*condition=*/false, /*file=*/&quot;&quot;, /*line=*/-1,
+<span class="lineNum">     316 </span>            :          &quot;Internal error: attempt to return invalid value&quot;);
+<span class="lineNum">     317 </span>            : #if defined(__GNUC__) || defined(__clang__)
+<span class="lineNum">     318 </span>            :   __builtin_unreachable();
+<span class="lineNum">     319 </span>            : #elif defined(_MSC_VER)
+<span class="lineNum">     320 </span>            :   __assume(0);
+<span class="lineNum">     321 </span>            : #else
+<span class="lineNum">     322 </span>            :   return Invalid&lt;T&gt;();
+<span class="lineNum">     323 </span>            : #endif
+<span class="lineNum">     324 </span>            : }
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : // Given a raw type (i.e. having no top-level reference or const
+<span class="lineNum">     327 </span>            : // modifier) RawContainer that's either an STL-style container or a
+<span class="lineNum">     328 </span>            : // native array, class StlContainerView&lt;RawContainer&gt; has the
+<span class="lineNum">     329 </span>            : // following members:
+<span class="lineNum">     330 </span>            : //
+<span class="lineNum">     331 </span>            : //   - type is a type that provides an STL-style container view to
+<span class="lineNum">     332 </span>            : //     (i.e. implements the STL container concept for) RawContainer;
+<span class="lineNum">     333 </span>            : //   - const_reference is a type that provides a reference to a const
+<span class="lineNum">     334 </span>            : //     RawContainer;
+<span class="lineNum">     335 </span>            : //   - ConstReference(raw_container) returns a const reference to an STL-style
+<span class="lineNum">     336 </span>            : //     container view to raw_container, which is a RawContainer.
+<span class="lineNum">     337 </span>            : //   - Copy(raw_container) returns an STL-style container view of a
+<span class="lineNum">     338 </span>            : //     copy of raw_container, which is a RawContainer.
+<span class="lineNum">     339 </span>            : //
+<span class="lineNum">     340 </span>            : // This generic version is used when RawContainer itself is already an
+<span class="lineNum">     341 </span>            : // STL-style container.
+<span class="lineNum">     342 </span>            : template &lt;class RawContainer&gt;
+<span class="lineNum">     343 </span>            : class StlContainerView {
+<span class="lineNum">     344 </span>            :  public:
+<span class="lineNum">     345 </span>            :   typedef RawContainer type;
+<span class="lineNum">     346 </span>            :   typedef const type&amp; const_reference;
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span>            :   static const_reference ConstReference(const RawContainer&amp; container) {
+<span class="lineNum">     349 </span>            :     static_assert(!std::is_const&lt;RawContainer&gt;::value,
+<span class="lineNum">     350 </span>            :                   &quot;RawContainer type must not be const&quot;);
+<span class="lineNum">     351 </span>            :     return container;
+<span class="lineNum">     352 </span>            :   }
+<span class="lineNum">     353 </span>            :   static type Copy(const RawContainer&amp; container) { return container; }
+<span class="lineNum">     354 </span>            : };
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span>            : // This specialization is used when RawContainer is a native array type.
+<span class="lineNum">     357 </span>            : template &lt;typename Element, size_t N&gt;
+<span class="lineNum">     358 </span>            : class StlContainerView&lt;Element[N]&gt; {
+<span class="lineNum">     359 </span>            :  public:
+<span class="lineNum">     360 </span>            :   typedef typename std::remove_const&lt;Element&gt;::type RawElement;
+<span class="lineNum">     361 </span>            :   typedef internal::NativeArray&lt;RawElement&gt; type;
+<span class="lineNum">     362 </span>            :   // NativeArray&lt;T&gt; can represent a native array either by value or by
+<span class="lineNum">     363 </span>            :   // reference (selected by a constructor argument), so 'const type'
+<span class="lineNum">     364 </span>            :   // can be used to reference a const native array.  We cannot
+<span class="lineNum">     365 </span>            :   // 'typedef const type&amp; const_reference' here, as that would mean
+<span class="lineNum">     366 </span>            :   // ConstReference() has to return a reference to a local variable.
+<span class="lineNum">     367 </span>            :   typedef const type const_reference;
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            :   static const_reference ConstReference(const Element (&amp;array)[N]) {
+<span class="lineNum">     370 </span>            :     static_assert(std::is_same&lt;Element, RawElement&gt;::value,
+<span class="lineNum">     371 </span>            :                   &quot;Element type must not be const&quot;);
+<span class="lineNum">     372 </span>            :     return type(array, N, RelationToSourceReference());
+<span class="lineNum">     373 </span>            :   }
+<span class="lineNum">     374 </span>            :   static type Copy(const Element (&amp;array)[N]) {
+<span class="lineNum">     375 </span>            :     return type(array, N, RelationToSourceCopy());
+<span class="lineNum">     376 </span>            :   }
+<span class="lineNum">     377 </span>            : };
+<span class="lineNum">     378 </span>            : 
+<span class="lineNum">     379 </span>            : // This specialization is used when RawContainer is a native array
+<span class="lineNum">     380 </span>            : // represented as a (pointer, size) tuple.
+<span class="lineNum">     381 </span>            : template &lt;typename ElementPointer, typename Size&gt;
+<span class="lineNum">     382 </span>            : class StlContainerView&lt; ::std::tuple&lt;ElementPointer, Size&gt; &gt; {
+<span class="lineNum">     383 </span>            :  public:
+<span class="lineNum">     384 </span>            :   typedef typename std::remove_const&lt;
+<span class="lineNum">     385 </span>            :       typename std::pointer_traits&lt;ElementPointer&gt;::element_type&gt;::type
+<span class="lineNum">     386 </span>            :       RawElement;
+<span class="lineNum">     387 </span>            :   typedef internal::NativeArray&lt;RawElement&gt; type;
+<span class="lineNum">     388 </span>            :   typedef const type const_reference;
+<span class="lineNum">     389 </span>            : 
+<span class="lineNum">     390 </span>            :   static const_reference ConstReference(
+<span class="lineNum">     391 </span>            :       const ::std::tuple&lt;ElementPointer, Size&gt;&amp; array) {
+<span class="lineNum">     392 </span>            :     return type(std::get&lt;0&gt;(array), std::get&lt;1&gt;(array),
+<span class="lineNum">     393 </span>            :                 RelationToSourceReference());
+<span class="lineNum">     394 </span>            :   }
+<span class="lineNum">     395 </span>            :   static type Copy(const ::std::tuple&lt;ElementPointer, Size&gt;&amp; array) {
+<span class="lineNum">     396 </span>            :     return type(std::get&lt;0&gt;(array), std::get&lt;1&gt;(array), RelationToSourceCopy());
+<span class="lineNum">     397 </span>            :   }
+<span class="lineNum">     398 </span>            : };
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            : // The following specialization prevents the user from instantiating
+<span class="lineNum">     401 </span>            : // StlContainer with a reference type.
+<span class="lineNum">     402 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     403 </span>            : class StlContainerView&lt;T&amp;&gt;;
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            : // A type transform to remove constness from the first part of a pair.
+<span class="lineNum">     406 </span>            : // Pairs like that are used as the value_type of associative containers,
+<span class="lineNum">     407 </span>            : // and this transform produces a similar but assignable pair.
+<span class="lineNum">     408 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     409 </span>            : struct RemoveConstFromKey {
+<span class="lineNum">     410 </span>            :   typedef T type;
+<span class="lineNum">     411 </span>            : };
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span>            : // Partially specialized to remove constness from std::pair&lt;const K, V&gt;.
+<span class="lineNum">     414 </span>            : template &lt;typename K, typename V&gt;
+<span class="lineNum">     415 </span>            : struct RemoveConstFromKey&lt;std::pair&lt;const K, V&gt; &gt; {
+<span class="lineNum">     416 </span>            :   typedef std::pair&lt;K, V&gt; type;
+<span class="lineNum">     417 </span>            : };
+<span class="lineNum">     418 </span>            : 
+<span class="lineNum">     419 </span>            : // Emit an assertion failure due to incorrect DoDefault() usage. Out-of-lined to
+<span class="lineNum">     420 </span>            : // reduce code size.
+<span class="lineNum">     421 </span>            : GTEST_API_ void IllegalDoDefault(const char* file, int line);
+<a name="422"><span class="lineNum">     422 </span>            : </a>
+<span class="lineNum">     423 </span>            : template &lt;typename F, typename Tuple, size_t... Idx&gt;
+<span class="lineNum">     424 </span><span class="lineCov">          7 : auto ApplyImpl(F&amp;&amp; f, Tuple&amp;&amp; args, std::index_sequence&lt;Idx...&gt;)</span>
+<span class="lineNum">     425 </span>            :     -&gt; decltype(std::forward&lt;F&gt;(f)(
+<span class="lineNum">     426 </span>            :         std::get&lt;Idx&gt;(std::forward&lt;Tuple&gt;(args))...)) {
+<span class="lineNum">     427 </span><span class="lineCov">          7 :   return std::forward&lt;F&gt;(f)(std::get&lt;Idx&gt;(std::forward&lt;Tuple&gt;(args))...);</span>
+<span class="lineNum">     428 </span>            : }
+<span class="lineNum">     429 </span><span class="lineCov">          3 : </span>
+<span class="lineNum">     430 </span>            : // Apply the function to a tuple of arguments.
+<span class="lineNum">     431 </span>            : template &lt;typename F, typename Tuple&gt;
+<span class="lineNum">     432 </span><span class="lineCov">          3 : auto Apply(F&amp;&amp; f, Tuple&amp;&amp; args)</span>
+<span class="lineNum">     433 </span>            :     -&gt; decltype(ApplyImpl(
+<span class="lineNum">     434 </span><span class="lineCov">          1 :         std::forward&lt;F&gt;(f), std::forward&lt;Tuple&gt;(args),</span>
+<span class="lineNum">     435 </span>            :         std::make_index_sequence&lt;std::tuple_size&lt;
+<span class="lineNum">     436 </span>            :             typename std::remove_reference&lt;Tuple&gt;::type&gt;::value&gt;())) {
+<span class="lineNum">     437 </span><span class="lineCov">          1 :   return ApplyImpl(std::forward&lt;F&gt;(f), std::forward&lt;Tuple&gt;(args),</span>
+<span class="lineNum">     438 </span>            :                    std::make_index_sequence&lt;std::tuple_size&lt;
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :                        typename std::remove_reference&lt;Tuple&gt;::type&gt;::value&gt;());</span>
+<span class="lineNum">     440 </span>            : }
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 : // Template struct Function&lt;F&gt;, where F must be a function type, contains</span>
+<span class="lineNum">     443 </span>            : // the following typedefs:
+<span class="lineNum">     444 </span><span class="lineCov">          3 : //</span>
+<span class="lineNum">     445 </span>            : //   Result:               the function's return type.
+<span class="lineNum">     446 </span>            : //   Arg&lt;N&gt;:               the type of the N-th argument, where N starts with 0.
+<span class="lineNum">     447 </span><span class="lineCov">          3 : //   ArgumentTuple:        the tuple type consisting of all parameters of F.</span>
+<span class="lineNum">     448 </span>            : //   ArgumentMatcherTuple: the tuple type consisting of Matchers for all
+<span class="lineNum">     449 </span>            : //                         parameters of F.
+<span class="lineNum">     450 </span>            : //   MakeResultVoid:       the function type obtained by substituting void
+<span class="lineNum">     451 </span>            : //                         for the return type of F.
+<span class="lineNum">     452 </span><span class="lineCov">          7 : //   MakeResultIgnoredValue:</span>
+<span class="lineNum">     453 </span>            : //                         the function type obtained by substituting Something
+<span class="lineNum">     454 </span>            : //                         for the return type of F.
+<span class="lineNum">     455 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     456 </span>            : struct Function;
+<span class="lineNum">     457 </span><span class="lineCov">          7 : </span>
+<span class="lineNum">     458 </span>            : template &lt;typename R, typename... Args&gt;
+<span class="lineNum">     459 </span><span class="lineCov">          5 : struct Function&lt;R(Args...)&gt; {</span>
+<span class="lineNum">     460 </span>            :   using Result = R;
+<span class="lineNum">     461 </span>            :   static constexpr size_t ArgumentCount = sizeof...(Args);
+<span class="lineNum">     462 </span>            :   template &lt;size_t I&gt;
+<span class="lineNum">     463 </span>            :   using Arg = ElemFromList&lt;I, Args...&gt;;
+<span class="lineNum">     464 </span>            :   using ArgumentTuple = std::tuple&lt;Args...&gt;;
+<span class="lineNum">     465 </span>            :   using ArgumentMatcherTuple = std::tuple&lt;Matcher&lt;Args&gt;...&gt;;
+<span class="lineNum">     466 </span>            :   using MakeResultVoid = void(Args...);
+<span class="lineNum">     467 </span>            :   using MakeResultIgnoredValue = IgnoredValue(Args...);
+<span class="lineNum">     468 </span>            : };
+<span class="lineNum">     469 </span>            : 
+<span class="lineNum">     470 </span>            : #ifdef GTEST_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+<span class="lineNum">     471 </span>            : template &lt;typename R, typename... Args&gt;
+<span class="lineNum">     472 </span>            : constexpr size_t Function&lt;R(Args...)&gt;::ArgumentCount;
+<span class="lineNum">     473 </span>            : #endif
+<span class="lineNum">     474 </span>            : 
+<span class="lineNum">     475 </span>            : // Workaround for MSVC error C2039: 'type': is not a member of 'std'
+<span class="lineNum">     476 </span>            : // when std::tuple_element is used.
+<span class="lineNum">     477 </span>            : // See: https://github.com/google/googletest/issues/3931
+<span class="lineNum">     478 </span>            : // Can be replaced with std::tuple_element_t in C++14.
+<span class="lineNum">     479 </span>            : template &lt;size_t I, typename T&gt;
+<span class="lineNum">     480 </span>            : using TupleElement = typename std::tuple_element&lt;I, T&gt;::type;
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            : bool Base64Unescape(const std::string&amp; encoded, std::string* decoded);
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            : GTEST_DISABLE_MSC_WARNINGS_POP_()  // 4100 4805
+<span class="lineNum">     485 </span>            : 
+<span class="lineNum">     486 </span>            : }  // namespace internal
+<span class="lineNum">     487 </span>            : }  // namespace testing
+<span class="lineNum">     488 </span>            : 
+<span class="lineNum">     489 </span>            : #endif  // GOOGLEMOCK_INCLUDE_GMOCK_INTERNAL_GMOCK_INTERNAL_UTILS_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

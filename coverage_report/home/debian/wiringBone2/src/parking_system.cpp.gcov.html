@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /home/debian/wiringBone2/src/parking_system.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">home/debian/wiringBone2/src</a> - parking_system.cpp<span style="font-size: 80%;"> (source / <a href="parking_system.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">201</td>
+            <td class="headerCovTableEntryLo">10.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-12-04 16:45:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryLo">15.4 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;parking_system.h&quot;</a>
+<span class="lineNum">       2 </span>            : #include &quot;utilities.h&quot;
+<span class="lineNum">       3 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">       4 </span>            : #include &lt;thread&gt;
+<span class="lineNum">       5 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       6 </span>            : #include &lt;unistd.h&gt;
+<span class="lineNum">       7 </span>            : #include &lt;fcntl.h&gt;
+<a name="8"><span class="lineNum">       8 </span>            : #include &lt;gmock/gmock.h&gt;</a>
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span><span class="lineCov">         25 : ParkingSystem::ParkingSystem(int totalSpots) {</span>
+<span class="lineNum">      11 </span><span class="lineCov">         17 :     if (totalSpots &lt;= 0) {</span>
+<span class="lineNum">      12 </span><span class="lineCov">          1 :         throw std::invalid_argument(&quot;Total spots must be greater than zero&quot;);</span>
+<span class="lineNum">      13 </span>            :     }
+<span class="lineNum">      14 </span>            :     
+<span class="lineNum">      15 </span><span class="lineCov">         16 :     this-&gt;totalSpots = totalSpots;</span>
+<span class="lineNum">      16 </span><span class="lineCov">         16 :     this-&gt;availableSpots = totalSpots;</span>
+<span class="lineNum">      17 </span><span class="lineCov">         16 :     this-&gt;stopFlag = false;</span>
+<span class="lineNum">      18 </span><span class="lineCov">         16 :     this-&gt;currentOccupancy.resize(totalSpots, false);</span>
+<span class="lineNum">      19 </span><span class="lineCov">         16 :     this-&gt;gateState = GateState::CENTERED;</span>
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            :     // Initialize IR sensor pins using definitions from header
+<span class="lineNum">      22 </span><span class="lineCov">         16 :     irSensorPins.push_back(IR_SENSOR1_PIN);</span>
+<span class="lineNum">      23 </span><span class="lineCov">         16 :     irSensorPins.push_back(IR_SENSOR2_PIN);</span>
+<span class="lineNum">      24 </span><span class="lineCov">         16 :     irSensorPins.push_back(IR_SENSOR3_PIN);</span>
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            :     // Rest of the initialization remains the same...
+<span class="lineNum">      27 </span><span class="lineCov">         16 :     exitGateSensorPin = EXIT_GATE_SENSOR_PIN;</span>
+<span class="lineNum">      28 </span><span class="lineCov">         16 :     entryGateSensorPin = ENTRY_GATE_SENSOR_PIN;</span>
+<span class="lineNum">      29 </span><span class="lineCov">         16 :     gateControlPin = GATE_CONTROL_PIN;</span>
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span><span class="lineCov">         16 :     greenLEDPins.push_back(GREEN_LED1_PIN);</span>
+<span class="lineNum">      32 </span><span class="lineCov">         16 :     greenLEDPins.push_back(GREEN_LED2_PIN);</span>
+<span class="lineNum">      33 </span><span class="lineCov">         16 :     greenLEDPins.push_back(GREEN_LED3_PIN);</span>
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span><span class="lineCov">         16 :     redLEDPins.push_back(RED_LED1_PIN);</span>
+<span class="lineNum">      36 </span><span class="lineCov">         16 :     redLEDPins.push_back(RED_LED2_PIN);</span>
+<span class="lineNum">      37 </span><span class="lineCov">         16 :     redLEDPins.push_back(RED_LED3_PIN);</span>
+<a name="38"><span class="lineNum">      38 </span><span class="lineCov">         16 : }</span></a>
+<span class="lineNum">      39 </span>            : 
+<a name="40"><span class="lineNum">      40 </span><span class="lineCov">         16 : ParkingSystem::~ParkingSystem() {}</span></a>
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 : bool ParkingSystem::initializeLEDPin(Pin&amp; pin, const char* type, int index) {</span>
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :     std::string exportPath = &quot;/sys/class/gpio/export&quot;;</span>
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :     std::string gpioPath = &quot;/sys/class/gpio/gpio&quot; + std::to_string(pin.pinNum);</span>
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            :     // Check if the pin is already exported
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :     if (access(gpioPath.c_str(), F_OK) != 0) {</span>
+<span class="lineNum">      48 </span>            :         // Export the pin
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :         std::ofstream exportFile(exportPath);</span>
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 :         if (exportFile.is_open()) {</span>
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :             exportFile &lt;&lt; pin.pinNum;</span>
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :             exportFile.close();</span>
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :             usleep(100000); // Wait for export to complete</span>
+<span class="lineNum">      54 </span>            :         } else {
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 :             std::cerr &lt;&lt; &quot;Failed to export GPIO pin &quot; &lt;&lt; pin.pinNum &lt;&lt; &quot; for &quot; &lt;&lt; type &lt;&lt; &quot; LED &quot; &lt;&lt; index + 1 &lt;&lt; std::endl;</span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :             return false;</span>
+<span class="lineNum">      57 </span>            :         }
+<span class="lineNum">      58 </span>            :     }
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     // Set direction to OUTPUT
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :     std::ofstream directionFile(gpioPath + &quot;/direction&quot;);</span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :     if (directionFile.is_open()) {</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :         directionFile &lt;&lt; &quot;out&quot;;</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :         directionFile.close();</span>
+<span class="lineNum">      65 </span>            :     } else {
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to set direction for GPIO pin &quot; &lt;&lt; pin.pinNum &lt;&lt; &quot; (&quot; &lt;&lt; type &lt;&lt; &quot; LED &quot; &lt;&lt; index + 1 &lt;&lt; &quot;)&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">      68 </span>            :     }
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            :     // Set initial state to LOW
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :     std::ofstream valueFile(gpioPath + &quot;/value&quot;);</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :     if (valueFile.is_open()) {</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :         valueFile &lt;&lt; &quot;0&quot;;</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :         valueFile.close();</span>
+<span class="lineNum">      75 </span>            :     } else {
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to set initial state for GPIO pin &quot; &lt;&lt; pin.pinNum &lt;&lt; &quot; (&quot; &lt;&lt; type &lt;&lt; &quot; LED &quot; &lt;&lt; index + 1 &lt;&lt; &quot;)&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">      78 </span>            :     }
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; type &lt;&lt; &quot; LED &quot; &lt;&lt; index + 1 &lt;&lt; &quot; initialized successfully&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :     return true;</span>
+<a name="82"><span class="lineNum">      82 </span>            : }</a>
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 : void ParkingSystem::updateSpotLEDs(int spotIndex, bool occupied) {</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :     if (spotIndex &lt; 0 || static_cast&lt;std::vector&lt;Pin&gt;::size_type&gt;(spotIndex) &gt;= greenLEDPins.size()) return;</span>
+<span class="lineNum">      86 </span>            :     
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :     if (digitalWrite(greenLEDPins[spotIndex], occupied ? LOW : HIGH) &lt; 0) {</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to control green LED &quot; &lt;&lt; spotIndex + 1 &lt;&lt; std::endl;</span>
+<span class="lineNum">      89 </span>            :     }
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     if (digitalWrite(redLEDPins[spotIndex], occupied ? HIGH : LOW) &lt; 0) {</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to control red LED &quot; &lt;&lt; spotIndex + 1 &lt;&lt; std::endl;</span>
+<span class="lineNum">      92 </span>            :     }
+<a name="93"><span class="lineNum">      93 </span>            : }</a>
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 : void ParkingSystem::initialize() {</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; &quot;Initializing Parking System...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :     if (!gpioInstance()) {</span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Critical Error: Failed to initialize GPIO instance!&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :         exit(EXIT_FAILURE);</span>
+<span class="lineNum">     101 </span>            :     }
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :     // Initialize IR sensors for spots
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :     for (auto&amp; pin : irSensorPins) {</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :         unexport_gpio(pin.pinNum);</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :         pin.selectedMode = gpio;</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :         if (pinMode(pin, INPUT) &lt; 0) {</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :             std::cerr &lt;&lt; &quot;Failed to configure pin &quot; &lt;&lt; pin.pinNum &lt;&lt; &quot; as INPUT&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">     110 </span>            :         }
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;GPIO pin &quot; &lt;&lt; pin.pinNum &lt;&lt; &quot; configured as INPUT&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     112 </span>            :     }
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :     // Initialize gate sensors
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :     unexport_gpio(exitGateSensorPin.pinNum);</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :     unexport_gpio(entryGateSensorPin.pinNum);</span>
+<span class="lineNum">     117 </span>            :     
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     if (pinMode(exitGateSensorPin, INPUT) &lt; 0 || pinMode(entryGateSensorPin, INPUT) &lt; 0) {</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to configure gate sensor pins&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         exit(EXIT_FAILURE);</span>
+<span class="lineNum">     121 </span>            :     }
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :     // Initialize LED pins
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; &quot;Initializing LED pins...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :     for (size_t i = 0; i &lt; greenLEDPins.size(); ++i) {</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :         bool green_ok = initializeLEDPin(greenLEDPins[i], &quot;Green&quot;, i);</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :         bool red_ok = initializeLEDPin(redLEDPins[i], &quot;Red&quot;, i);</span>
+<span class="lineNum">     128 </span>            :         
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :         if (green_ok &amp;&amp; red_ok) {</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :             updateSpotLEDs(i, false);  // Initialize to available state</span>
+<span class="lineNum">     131 </span>            :         }
+<span class="lineNum">     132 </span>            :     }
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :     // Initialize servo motor (PWM)
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     std::string pwmExportPath = &quot;/sys/class/pwm/pwmchip4/export&quot;;</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     std::string pwmPeriodPath = &quot;/sys/class/pwm/pwmchip4/pwm-4:0/period&quot;;</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     std::string pwmDutyCyclePath = &quot;/sys/class/pwm/pwmchip4/pwm-4:0/duty_cycle&quot;;</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :     std::string pwmEnablePath = &quot;/sys/class/pwm/pwmchip4/pwm-4:0/enable&quot;;</span>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :     if (access(&quot;/sys/class/pwm/pwmchip4/pwm-4:0&quot;, F_OK) != 0) {</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :         writeToSysfs(pwmExportPath, &quot;0&quot;);</span>
+<span class="lineNum">     142 </span>            :     }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     writeToSysfs(pwmPeriodPath, std::to_string(PWM_PERIOD));</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :     writeToSysfs(pwmDutyCyclePath, std::to_string(GATE_CENTER_DUTY_CYCLE));</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :     writeToSysfs(pwmEnablePath, &quot;1&quot;);</span>
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; &quot;Centering gate at startup...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :     controlGate(GateState::CENTERED);</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :     std::this_thread::sleep_for(std::chrono::milliseconds(1000));</span>
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; &quot;System initialized with &quot; &lt;&lt; totalSpots &lt;&lt; &quot; parking spots.&quot; &lt;&lt; std::endl;</span>
+<a name="153"><span class="lineNum">     153 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 : void ParkingSystem::controlGate(GateState newState) {</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     std::string pwmDutyCyclePath = &quot;/sys/class/pwm/pwmchip4/pwm-4:0/duty_cycle&quot;;</span>
+<span class="lineNum">     157 </span>            :     
+<span class="lineNum">     158 </span>            :     int dutyCycle;
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :     switch(newState) {</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :         case GateState::OPEN_ENTRY:</span>
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 :             std::cout &lt;&lt; &quot;Opening gate for entry (clockwise)...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :             dutyCycle = GATE_ENTRY_DUTY_CYCLE;</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :         case GateState::OPEN_EXIT:</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :             std::cout &lt;&lt; &quot;Opening gate for exit (counter-clockwise)...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :             dutyCycle = GATE_EXIT_DUTY_CYCLE;</span>
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :         case GateState::CENTERED:</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :             std::cout &lt;&lt; &quot;Centering gate...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :             dutyCycle = GATE_CENTER_DUTY_CYCLE;</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     172 </span>            :     }
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     writeToSysfs(pwmDutyCyclePath, std::to_string(dutyCycle));</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :     gateState = newState;</span>
+<a name="176"><span class="lineNum">     176 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 : void ParkingSystem::run() {</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :     std::thread spotThread(&amp;ParkingSystem::monitorSpots, this);</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     std::thread exitThread(&amp;ParkingSystem::monitorExitGateSensor, this);</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :     std::thread entryThread(&amp;ParkingSystem::monitorEntryGateSensor, this);</span>
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :     std::thread displayThread(&amp;ParkingSystem::updateDisplay, this);</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :     setThreadPriority(entryThread, 80); // High priority for entry sensor</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :     setThreadPriority(exitThread, 80); // High priority for exit sensor</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :     setThreadPriority(spotThread, 50); // Medium priority for spot monitoring</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :     setThreadPriority(displayThread, 30); // Low priority for display updates</span>
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :     spotThread.detach();</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :     exitThread.detach();</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :     entryThread.detach();</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :     displayThread.detach();</span>
+<a name="193"><span class="lineNum">     193 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 : void ParkingSystem::stop() {</span>
+<span class="lineNum">     196 </span>            :     {
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :         std::lock_guard&lt;std::mutex&gt; lock(threadMutex);</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :         stopFlag = true;</span>
+<span class="lineNum">     199 </span>            :     }
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :     cv.notify_all();</span>
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :     for (size_t i = 0; i &lt; greenLEDPins.size(); ++i) {</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :         digitalWrite(greenLEDPins[i], LOW);</span>
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :         digitalWrite(redLEDPins[i], LOW);</span>
+<span class="lineNum">     205 </span>            :     }
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :     controlGate(GateState::CENTERED);</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :     std::this_thread::sleep_for(std::chrono::milliseconds(1000));</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :     writeToSysfs(&quot;/sys/class/pwm/pwmchip4/pwm-4:0/enable&quot;, &quot;0&quot;);</span>
+<a name="210"><span class="lineNum">     210 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 : void ParkingSystem::monitorSpots() {</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :     while (!stopFlag) {</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :         for (size_t i = 0; i &lt; irSensorPins.size(); ++i) {</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :             int status = digitalRead(irSensorPins[i]);</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :             if (status &gt;= 0) {</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :                 std::lock_guard&lt;std::mutex&gt; lock(displayMutex);</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :                 bool occupied = (status == LOW);</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :                 if (occupied != currentOccupancy[i]) {</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :                     currentOccupancy[i] = occupied;</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :                     updateSpotLEDs(i, occupied);</span>
+<span class="lineNum">     222 </span>            :                 }
+<span class="lineNum">     223 </span>            :             }
+<span class="lineNum">     224 </span>            :         }
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :         std::this_thread::sleep_for(std::chrono::milliseconds(100));</span>
+<span class="lineNum">     226 </span>            :     }
+<a name="227"><span class="lineNum">     227 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 : void ParkingSystem::monitorEntryGateSensor() {</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :     bool lastSensorState = HIGH;</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :     std::chrono::steady_clock::time_point lastChange;</span>
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :     while (!stopFlag) {</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :         int sensorStatus = digitalRead(entryGateSensorPin);</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :         if (sensorStatus &lt; 0) continue;</span>
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :         auto now = std::chrono::steady_clock::now();</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :         auto duration = std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(now - lastChange);</span>
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :         if (duration.count() &gt;= SENSOR_DEBOUNCE_DELAY) {</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :             std::lock_guard&lt;std::mutex&gt; lock(displayMutex);</span>
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :             if (sensorStatus == LOW &amp;&amp; lastSensorState == HIGH) {</span>
+<span class="lineNum">     244 </span>            :                 // Car detected at entry
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :                 if (availableSpots &gt; 0) {</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :                     controlGate(GateState::OPEN_ENTRY);</span>
+<span class="lineNum">     247 </span>            :                     // Decrement availability after car passes (with delay)
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :                     std::this_thread::sleep_for(std::chrono::milliseconds(GATE_PASSAGE_DELAY));</span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :                     availableSpots--;</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :                     controlGate(GateState::CENTERED);</span>
+<span class="lineNum">     251 </span>            :                 }
+<span class="lineNum">     252 </span>            :             }
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :             lastSensorState = sensorStatus;</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :             lastChange = now;</span>
+<span class="lineNum">     256 </span>            :         }
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :         std::this_thread::sleep_for(std::chrono::milliseconds(50));</span>
+<span class="lineNum">     259 </span>            :     }
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     261 </span>            : 
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 : void ParkingSystem::monitorExitGateSensor() {</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :     bool lastSensorState = HIGH;</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :     std::chrono::steady_clock::time_point lastChange;</span>
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :     while (!stopFlag) {</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :         int sensorStatus = digitalRead(exitGateSensorPin);</span>
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :         if (sensorStatus &lt; 0) continue;</span>
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :         auto now = std::chrono::steady_clock::now();</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :         auto duration = std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(now - lastChange);</span>
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :         if (duration.count() &gt;= SENSOR_DEBOUNCE_DELAY) {</span>
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :             std::lock_guard&lt;std::mutex&gt; lock(displayMutex);</span>
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :             if (sensorStatus == LOW &amp;&amp; lastSensorState == HIGH) {</span>
+<span class="lineNum">     277 </span>            :                 // Car detected at exit
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :                 controlGate(GateState::OPEN_EXIT);</span>
+<span class="lineNum">     279 </span>            :                 // Increment availability after car passes (with delay)
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :                 std::this_thread::sleep_for(std::chrono::milliseconds(GATE_PASSAGE_DELAY));</span>
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :                 if (availableSpots &lt; totalSpots) {</span>
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :                     availableSpots++;</span>
+<span class="lineNum">     283 </span>            :                 }
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :                 controlGate(GateState::CENTERED);</span>
+<span class="lineNum">     285 </span>            :             }
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :             lastSensorState = sensorStatus;</span>
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :             lastChange = now;</span>
+<span class="lineNum">     289 </span>            :         }
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :         std::this_thread::sleep_for(std::chrono::milliseconds(50));</span>
+<span class="lineNum">     292 </span>            :     }
+<a name="293"><span class="lineNum">     293 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 : void ParkingSystem::updateDisplay() {</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :     int lastAvailable = -1;</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :     GateState lastGateState = GateState::CENTERED;</span>
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :     while (!stopFlag) {</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :         std::lock_guard&lt;std::mutex&gt; lock(displayMutex);</span>
+<span class="lineNum">     301 </span>            :         
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :         if (availableSpots != lastAvailable || gateState != lastGateState) {</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :             std::cout &lt;&lt; &quot;Parking Status - Available: &quot; &lt;&lt; availableSpots </span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :                       &lt;&lt; &quot;/&quot; &lt;&lt; totalSpots </span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :                       &lt;&lt; &quot; (Occupied: &quot; &lt;&lt; (totalSpots - availableSpots) &lt;&lt; &quot;)&quot;</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :                       &lt;&lt; &quot; [Gate: &quot; &lt;&lt; (gateState == GateState::CENTERED ? &quot;CENTERED&quot; :</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :                                       gateState == GateState::OPEN_ENTRY ? &quot;ENTRY&quot; : &quot;EXIT&quot;)</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :                       &lt;&lt; &quot;]&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :             lastAvailable = availableSpots;</span>
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :             lastGateState = gateState;</span>
+<span class="lineNum">     312 </span>            :         }
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :         std::this_thread::sleep_for(std::chrono::milliseconds(200));</span>
+<span class="lineNum">     315 </span>            :     }
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : class MockParkingSystem : public ParkingSystem {
+<span class="lineNum">     319 </span>            : public:
+<span class="lineNum">     320 </span>            :     explicit MockParkingSystem(int totalSpots) : ParkingSystem(totalSpots) {}
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :     MOCK_METHOD(void, initialize, (), (override));
+<span class="lineNum">     323 </span>            :     MOCK_METHOD(void, controlGate, (GateState newState), (override));
+<span class="lineNum">     324 </span>            :     MOCK_METHOD(void, monitorSpots, (), (override));
+<span class="lineNum">     325 </span>            :     MOCK_METHOD(void, monitorEntryGateSensor, (), (override));
+<span class="lineNum">     326 </span>            :     MOCK_METHOD(void, monitorExitGateSensor, (), (override));
+<span class="lineNum">     327 </span>            :     MOCK_METHOD(void, updateDisplay, (), (override));
+<span class="lineNum">     328 </span>            :     MOCK_METHOD(int, getAvailableSpots, (), (const, override));
+<span class="lineNum">     329 </span>            :     MOCK_METHOD(GateState, getGateState, (), (const, override));
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            :     // Helper method to simulate sensor triggers
+<span class="lineNum">     332 </span>            :     void simulateEntrySensor() {
+<span class="lineNum">     333 </span>            :         if (getAvailableSpots() &gt; 0) {
+<span class="lineNum">     334 </span>            :             controlGate(GateState::OPEN_ENTRY);
+<span class="lineNum">     335 </span>            :             setAvailableSpots(getAvailableSpots() - 1);
+<span class="lineNum">     336 </span>            :             controlGate(GateState::CENTERED);
+<span class="lineNum">     337 </span>            :         }
+<span class="lineNum">     338 </span>            :     }
+<span class="lineNum">     339 </span>            : 
+<span class="lineNum">     340 </span>            :     void simulateExitSensor() {
+<span class="lineNum">     341 </span>            :         controlGate(GateState::OPEN_EXIT);
+<span class="lineNum">     342 </span>            :         setAvailableSpots(std::min(getTotalSpots(), getAvailableSpots() + 1));
+<span class="lineNum">     343 </span>            :         controlGate(GateState::CENTERED);
+<span class="lineNum">     344 </span>            :     }
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : protected:
+<span class="lineNum">     347 </span>            :     // Protected methods to manipulate internal state for testing
+<span class="lineNum">     348 </span>            :     void setAvailableSpots(int spots) {
+<span class="lineNum">     349 </span>            :         availableSpots = spots;
+<span class="lineNum">     350 </span>            :     }
+<span class="lineNum">     351 </span>            : 
+<span class="lineNum">     352 </span>            :     int getTotalSpots() const {
+<span class="lineNum">     353 </span>            :         return totalSpots;
+<span class="lineNum">     354 </span>            :     }
+<span class="lineNum">     355 </span>            : };
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /home/debian/wiringBone2/src/PINS.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">home/debian/wiringBone2/src</a> - PINS.cpp<span style="font-size: 80%;"> (source / <a href="PINS.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntryLo">16.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-12-04 16:45:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryLo">25.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     This file is a part of the wiringBone library
+<span class="lineNum">       3 </span>            :     Copyright (C) 2015 Abhraneel Bera
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :     This library is free software; you can redistribute it and/or
+<span class="lineNum">       6 </span>            :     modify it under the terms of the GNU Lesser General Public
+<span class="lineNum">       7 </span>            :     License as published by the Free Software Foundation; either
+<span class="lineNum">       8 </span>            :     version 3 of the License, or (at your option) any later version.
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     This library is distributed in the hope that it will be useful,
+<span class="lineNum">      11 </span>            :     but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      12 </span>            :     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<span class="lineNum">      13 </span>            :     Lesser General Public License for more details.
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            :     You should have received a copy of the GNU Lesser General Public
+<span class="lineNum">      16 </span>            :     License along with this library; if not, write to the Free Software
+<span class="lineNum">      17 </span>            :     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+<span class="lineNum">      18 </span>            :     USA
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &quot;PINS.h&quot;
+<span class="lineNum">      22 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">      23 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">      24 </span>            : #include &lt;sstream&gt;
+<span class="lineNum">      25 </span>            : #include &lt;mutex&gt;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : // Define the mutex
+<span class="lineNum">      28 </span>            : std::mutex gpio_mutex;
+<a name="29"><span class="lineNum">      29 </span>            : </a>
+<span class="lineNum">      30 </span>            : // Function to write to a sysfs file with mutex protection
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 : bool write_to_sysfs(const std::string &amp;path, const std::string &amp;value) {</span>
+<span class="lineNum">      32 </span><span class="lineNoCov">          0 :     std::lock_guard&lt;std::mutex&gt; lock(gpio_mutex); // Lock mutex for thread safety</span>
+<span class="lineNum">      33 </span><span class="lineNoCov">          0 :     std::ofstream file(path);</span>
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :     if (!file.is_open()) {</span>
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to open &quot; &lt;&lt; path &lt;&lt; std::endl;</span>
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">      37 </span>            :     }
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :     file &lt;&lt; value;</span>
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :     if (file.fail()) {</span>
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to write to &quot; &lt;&lt; path &lt;&lt; std::endl;</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">      42 </span>            :     }
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">      44 </span>            : }
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<span class="lineNum">      46 </span>            : // Function to set GPIO direction
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 : bool set_gpio_direction(int pin, const std::string &amp;direction) {</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :     return write_to_sysfs(&quot;/sys/class/gpio/gpio&quot; + std::to_string(pin) + &quot;/direction&quot;, direction);</span>
+<span class="lineNum">      49 </span>            : }
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<span class="lineNum">      51 </span>            : // Function to read GPIO value with mutex protection
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 : int read_gpio_value(int pin) {</span>
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :     std::lock_guard&lt;std::mutex&gt; lock(gpio_mutex);</span>
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :     std::ifstream file(&quot;/sys/class/gpio/gpio&quot; + std::to_string(pin) + &quot;/value&quot;);</span>
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 :     if (!file.is_open()) {</span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to open value file for GPIO &quot; &lt;&lt; pin &lt;&lt; std::endl;</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">      58 </span>            :     }
+<span class="lineNum">      59 </span>            :     int value;
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :     file &gt;&gt; value;</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :     if (file.fail()) {</span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to read value for GPIO &quot; &lt;&lt; pin &lt;&lt; std::endl;</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">      64 </span>            :     }
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :     return value;</span>
+<span class="lineNum">      66 </span>            : }
+<a name="67"><span class="lineNum">      67 </span>            : </a>
+<span class="lineNum">      68 </span>            : // Function to export GPIO
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 : bool export_gpio(int pin) {</span>
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     return write_to_sysfs(&quot;/sys/class/gpio/export&quot;, std::to_string(pin));</span>
+<span class="lineNum">      71 </span>            : }
+<a name="72"><span class="lineNum">      72 </span>            : </a>
+<span class="lineNum">      73 </span>            : // Function to unexport GPIO
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 : bool unexport_gpio(int pin) {</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     return write_to_sysfs(&quot;/sys/class/gpio/unexport&quot;, std::to_string(pin));</span>
+<span class="lineNum">      76 </span>            : }
+<a name="77"><span class="lineNum">      77 </span>            : </a>
+<span class="lineNum">      78 </span>            : // Function to initialize a GPIO pin
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 : void initializeGPIO(Pin &amp;pin) {</span>
+<span class="lineNum">      80 </span>            :     // Export the pin
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :     if (!export_gpio(pin.pinNum)) {</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to export GPIO pin &quot; &lt;&lt; pin.pinName &lt;&lt; std::endl;</span>
+<span class="lineNum">      83 </span>            :     }
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            :     // Set the direction of the pin
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :     if (!set_gpio_direction(pin.pinNum, &quot;in&quot;)) {</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Failed to configure GPIO pin &quot; &lt;&lt; pin.pinName &lt;&lt; &quot; as INPUT&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      88 </span>            :     } else {
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;GPIO pin &quot; &lt;&lt; pin.pinName &lt;&lt; &quot; configured as INPUT.&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      90 </span>            :     }
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 : }</span>
+<a name="92"><span class="lineNum">      92 </span>            : </a>
+<span class="lineNum">      93 </span>            : // Debug function to verify pin initialization
+<span class="lineNum">      94 </span><span class="lineCov">          1 : void debugPinInitialization() {</span>
+<span class="lineNum">      95 </span><span class="lineCov">          1 :     std::cout &lt;&lt; &quot;Starting Program ...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">      98 </span>            : 
+<a name="99"><span class="lineNum">      99 </span>            : // Run during library initialization</a>
+<span class="lineNum">     100 </span>            : __attribute__((constructor))
+<span class="lineNum">     101 </span><span class="lineCov">          1 : void setupPins() {</span>
+<span class="lineNum">     102 </span><span class="lineCov">          1 :     debugPinInitialization();</span>
+<span class="lineNum">     103 </span><span class="lineCov">          1 :     if (P8_16.selectedMode != gpio) {</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :         std::cerr &lt;&lt; &quot;Error: P8_16 is not set to GPIO mode!&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     105 </span>            :     }
+<span class="lineNum">     106 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : // Define valid modes for pins
+<span class="lineNum">     109 </span>            : PinModes P8_16_modes[] = {gpio, pruin};
+<span class="lineNum">     110 </span>            : PinModes P8_15_modes[] = {gpio, pruin};
+<span class="lineNum">     111 </span>            : PinModes P8_12_modes[] = {gpio, pruin};
+<span class="lineNum">     112 </span>            : PinModes P8_14_modes[] = {gpio, pruin};
+<span class="lineNum">     113 </span>            : PinModes P8_11_modes[] = {gpio, pruin};
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            : // Define pins with modes
+<span class="lineNum">     116 </span>            : Pin P8_16 = {46, &quot;P8_16&quot;, gpio, P8_16_modes, 2, none};
+<span class="lineNum">     117 </span>            : Pin P8_15 = {47, &quot;P8_15&quot;, gpio, P8_15_modes, 2, none};
+<span class="lineNum">     118 </span>            : Pin P8_12 = {44, &quot;P8_12&quot;, gpio, P8_12_modes, 2, none};
+<span class="lineNum">     119 </span>            : Pin P8_14 = {26, &quot;P8_14&quot;, gpio, P8_14_modes, 2, none};
+<span class="lineNum">     120 </span>            : Pin P8_11 = {45, &quot;P8_11&quot;, gpio, P8_11_modes, 2, none};
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : // Define valid modes for pins
+<span class="lineNum">     124 </span>            : //PinModes P8_16_modes[] = {gpio, pruin};
+<span class="lineNum">     125 </span>            : PinModes P9_11_modes[] = {gpio, uart};
+<span class="lineNum">     126 </span>            : PinModes P9_12_modes[] = {gpio};
+<span class="lineNum">     127 </span>            : PinModes P9_13_modes[] = {gpio, uart};
+<span class="lineNum">     128 </span>            : PinModes P9_14_modes[] = {gpio, pwm};
+<span class="lineNum">     129 </span>            : PinModes P9_15_modes[] = {gpio};
+<span class="lineNum">     130 </span>            : PinModes P9_16_modes[] = {gpio, pwm};
+<span class="lineNum">     131 </span>            : PinModes P9_17_modes[] = {gpio, spi, i2c};
+<span class="lineNum">     132 </span>            : PinModes P9_18_modes[] = {gpio, spi, i2c};
+<span class="lineNum">     133 </span>            : PinModes P9_21_modes[] = {gpio, pwm, uart, spi, i2c};
+<span class="lineNum">     134 </span>            : PinModes P9_22_modes[] = {gpio, pwm, uart, spi, i2c};
+<span class="lineNum">     135 </span>            : PinModes P9_23_modes[] = {gpio};
+<span class="lineNum">     136 </span>            : PinModes P9_24_modes[] = {gpio, pruin, uart, i2c};
+<span class="lineNum">     137 </span>            : PinModes P9_25_modes[] = {gpio, pruout, pruin};
+<span class="lineNum">     138 </span>            : PinModes P9_26_modes[] = {gpio, pruin, uart, i2c};
+<span class="lineNum">     139 </span>            : PinModes P9_27_modes[] = {gpio, pruout, pruin};
+<span class="lineNum">     140 </span>            : PinModes P9_28_modes[] = {gpio, pruout, pruin, pwm, spi};
+<span class="lineNum">     141 </span>            : PinModes P9_29_modes[] = {gpio, pruout, pruin, pwm, spi};
+<span class="lineNum">     142 </span>            : PinModes P9_30_modes[] = {gpio, pruout, pruin, spi};
+<span class="lineNum">     143 </span>            : PinModes P9_31_modes[] = {gpio, pruout, pruin, pwm, spi};
+<span class="lineNum">     144 </span>            : PinModes P9_41_modes[] = {gpio, pruout, pruin};
+<span class="lineNum">     145 </span>            : PinModes P9_42_modes[] = {gpio, pruout, pruin, pwm, spi};
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : // Define default modes for each pin
+<span class="lineNum">     148 </span>            : #define P9_11_MODE gpio
+<span class="lineNum">     149 </span>            : #define P9_12_MODE gpio
+<span class="lineNum">     150 </span>            : #define P9_13_MODE gpio
+<span class="lineNum">     151 </span>            : #define P9_14_MODE gpio
+<span class="lineNum">     152 </span>            : #define P9_15_MODE gpio
+<span class="lineNum">     153 </span>            : #define P9_16_MODE gpio
+<span class="lineNum">     154 </span>            : #define P9_17_MODE gpio
+<span class="lineNum">     155 </span>            : #define P9_18_MODE gpio
+<span class="lineNum">     156 </span>            : #define P9_21_MODE gpio
+<span class="lineNum">     157 </span>            : #define P9_22_MODE gpio
+<span class="lineNum">     158 </span>            : #define P9_23_MODE gpio
+<span class="lineNum">     159 </span>            : #define P9_24_MODE gpio
+<span class="lineNum">     160 </span>            : #define P9_25_MODE gpio
+<span class="lineNum">     161 </span>            : #define P9_26_MODE gpio
+<span class="lineNum">     162 </span>            : #define P9_27_MODE gpio
+<span class="lineNum">     163 </span>            : #define P9_28_MODE gpio
+<span class="lineNum">     164 </span>            : #define P9_29_MODE gpio
+<span class="lineNum">     165 </span>            : #define P9_30_MODE gpio
+<span class="lineNum">     166 </span>            : #define P9_31_MODE gpio
+<span class="lineNum">     167 </span>            : #define P9_41_MODE gpio
+<span class="lineNum">     168 </span>            : #define P9_42_MODE gpio
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            : // Define Pins
+<span class="lineNum">     171 </span>            : Pin P9_11 = {30,  &quot;P9_11&quot;, P9_11_MODE, P9_11_modes, 2, none};
+<span class="lineNum">     172 </span>            : Pin P9_12 = {60,  &quot;P9_12&quot;, P9_12_MODE, P9_12_modes, 1, none};
+<span class="lineNum">     173 </span>            : Pin P9_13 = {31,  &quot;P9_13&quot;, P9_13_MODE, P9_13_modes, 2, none};
+<span class="lineNum">     174 </span>            : Pin P9_14 = {50,  &quot;P9_14&quot;, P9_14_MODE, P9_14_modes, 2, none};
+<span class="lineNum">     175 </span>            : Pin P9_15 = {48,  &quot;P9_15&quot;, P9_15_MODE, P9_15_modes, 1, none};
+<span class="lineNum">     176 </span>            : Pin P9_16 = {51,  &quot;P9_16&quot;, P9_16_MODE, P9_16_modes, 2, none};
+<span class="lineNum">     177 </span>            : Pin P9_17 = {5,   &quot;P9_17&quot;, P9_17_MODE, P9_17_modes, 3, none};
+<span class="lineNum">     178 </span>            : Pin P9_18 = {4,   &quot;P9_18&quot;, P9_18_MODE, P9_18_modes, 3, none};
+<span class="lineNum">     179 </span>            : Pin P9_21 = {3,   &quot;P9_21&quot;, P9_21_MODE, P9_21_modes, 5, none};
+<span class="lineNum">     180 </span>            : Pin P9_22 = {2,   &quot;P9_22&quot;, P9_22_MODE, P9_22_modes, 5, none};
+<span class="lineNum">     181 </span>            : Pin P9_23 = {49,  &quot;P9_23&quot;, P9_23_MODE, P9_23_modes, 1, none};
+<span class="lineNum">     182 </span>            : Pin P9_24 = {15,  &quot;P9_24&quot;, P9_24_MODE, P9_24_modes, 4, none};
+<span class="lineNum">     183 </span>            : Pin P9_25 = {117, &quot;P9_25&quot;, P9_25_MODE, P9_25_modes, 3, audio};
+<span class="lineNum">     184 </span>            : Pin P9_26 = {14,  &quot;P9_26&quot;, P9_26_MODE, P9_26_modes, 4, none};
+<span class="lineNum">     185 </span>            : Pin P9_27 = {115, &quot;P9_27&quot;, P9_27_MODE, P9_27_modes, 3, none};
+<span class="lineNum">     186 </span>            : Pin P9_28 = {113, &quot;P9_28&quot;, P9_28_MODE, P9_28_modes, 5, audio};
+<span class="lineNum">     187 </span>            : Pin P9_29 = {111, &quot;P9_29&quot;, P9_29_MODE, P9_29_modes, 5, audio};
+<span class="lineNum">     188 </span>            : Pin P9_30 = {112, &quot;P9_30&quot;, P9_30_MODE, P9_30_modes, 4, none};
+<span class="lineNum">     189 </span>            : Pin P9_31 = {110, &quot;P9_31&quot;, P9_31_MODE, P9_31_modes, 5, audio};
+<span class="lineNum">     190 </span>            : Pin P9_41 = {20,  &quot;P9_41&quot;, P9_41_MODE, P9_41_modes, 3, none};
+<span class="lineNum">     191 </span>            : Pin P9_42 = {7,   &quot;P9_42&quot;, P9_42_MODE, P9_42_modes, 5, none};
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

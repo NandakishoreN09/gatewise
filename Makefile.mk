@@ -1,18 +1,31 @@
 #****************************************************************
-#Usage :
+#Usage:
 
-#Source file in this directory will be automatocally compiled.
+# Automatically compile source files in this directory.
+# To include additional directories, use SRC_SEARCH_DIR += <directory_path>
+# Example: SRC_SEARCH_DIR += ~/Desktop/example/
 
-#To include any other directory use SRC_SEARCH_DIR += followed by 
-#directory name (ending with / ).
-#For example SRC_SEARCH_DIR += ~/Desktop/example/
+# To include specific files from other directories:
+# For .c files: C_SRC += <full_path>
+# For .cpp files: CPP_SRC += <full_path>
+# For .ino files: INO_SRC += <full_path>
+# For .pde files: PDE_SRC += <full_path>
 
-#To include selective source files from other directories :
-# For .c   files use C_SRC +=   followed by full path
-# For .cpp files use CPP_SRC += followed by full path
-# For .ino files use INO_SRC += followed by full path
-# For .pde files use PDE_SRC += followed by full path
-
-#Optional compile-time flags can be added using CFLAGS += or 
-#CPPFLAGS += followed by flags.
+# Optional compile-time flags:
+# Use CFLAGS += or CPPFLAGS += <flags>
 #****************************************************************
+
+# Include the library folder
+SRC_SEARCH_DIR += ./library/
+
+# Explicitly add parking_system.cpp
+CPP_SRC += library/parking_system.cpp
+
+# Add include paths for library headers
+CPPFLAGS += -I./library
+
+# Flags for additional debugging
+CFLAGS += -g
+CPPFLAGS += -g
+
+

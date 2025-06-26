@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/gmock/gmock-cardinalities.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/gmock</a> - gmock-cardinalities.h<span style="font-size: 80%;"> (source / <a href="gmock-cardinalities.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-12-04 16:45:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright 2007, Google Inc.</a>
+<span class="lineNum">       2 </span>            : // All rights reserved.
+<span class="lineNum">       3 </span>            : //
+<span class="lineNum">       4 </span>            : // Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       5 </span>            : // modification, are permitted provided that the following conditions are
+<span class="lineNum">       6 </span>            : // met:
+<span class="lineNum">       7 </span>            : //
+<span class="lineNum">       8 </span>            : //     * Redistributions of source code must retain the above copyright
+<span class="lineNum">       9 </span>            : // notice, this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>            : //     * Redistributions in binary form must reproduce the above
+<span class="lineNum">      11 </span>            : // copyright notice, this list of conditions and the following disclaimer
+<span class="lineNum">      12 </span>            : // in the documentation and/or other materials provided with the
+<span class="lineNum">      13 </span>            : // distribution.
+<span class="lineNum">      14 </span>            : //     * Neither the name of Google Inc. nor the names of its
+<span class="lineNum">      15 </span>            : // contributors may be used to endorse or promote products derived from
+<span class="lineNum">      16 </span>            : // this software without specific prior written permission.
+<span class="lineNum">      17 </span>            : //
+<span class="lineNum">      18 </span>            : // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+<span class="lineNum">      19 </span>            : // &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+<span class="lineNum">      20 </span>            : // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+<span class="lineNum">      21 </span>            : // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+<span class="lineNum">      22 </span>            : // OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<span class="lineNum">      23 </span>            : // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<span class="lineNum">      24 </span>            : // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+<span class="lineNum">      25 </span>            : // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+<span class="lineNum">      26 </span>            : // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+<span class="lineNum">      27 </span>            : // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+<span class="lineNum">      28 </span>            : // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : // Google Mock - a framework for writing C++ mock classes.
+<span class="lineNum">      31 </span>            : //
+<span class="lineNum">      32 </span>            : // This file implements some commonly used cardinalities.  More
+<span class="lineNum">      33 </span>            : // cardinalities can be defined by the user implementing the
+<span class="lineNum">      34 </span>            : // CardinalityInterface interface if necessary.
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : // IWYU pragma: private, include &quot;gmock/gmock.h&quot;
+<span class="lineNum">      37 </span>            : // IWYU pragma: friend gmock/.*
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #ifndef GOOGLEMOCK_INCLUDE_GMOCK_GMOCK_CARDINALITIES_H_
+<span class="lineNum">      40 </span>            : #define GOOGLEMOCK_INCLUDE_GMOCK_GMOCK_CARDINALITIES_H_
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : #include &lt;limits.h&gt;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : #include &lt;memory&gt;
+<span class="lineNum">      45 </span>            : #include &lt;ostream&gt;  // NOLINT
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : #include &quot;gmock/internal/gmock-port.h&quot;
+<span class="lineNum">      48 </span>            : #include &quot;gtest/gtest.h&quot;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : GTEST_DISABLE_MSC_WARNINGS_PUSH_(4251 \
+<span class="lineNum">      51 </span>            : /* class A needs to have dll-interface to be used by clients of class B */)
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : namespace testing {
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : // To implement a cardinality Foo, define:
+<span class="lineNum">      56 </span>            : //   1. a class FooCardinality that implements the
+<span class="lineNum">      57 </span>            : //      CardinalityInterface interface, and
+<span class="lineNum">      58 </span>            : //   2. a factory function that creates a Cardinality object from a
+<span class="lineNum">      59 </span>            : //      const FooCardinality*.
+<span class="lineNum">      60 </span>            : //
+<span class="lineNum">      61 </span>            : // The two-level delegation design follows that of Matcher, providing
+<span class="lineNum">      62 </span>            : // consistency for extension developers.  It also eases ownership
+<span class="lineNum">      63 </span>            : // management as Cardinality objects can now be copied like plain values.
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            : // The implementation of a cardinality.
+<span class="lineNum">      66 </span>            : class CardinalityInterface {
+<span class="lineNum">      67 </span>            :  public:
+<span class="lineNum">      68 </span>            :   virtual ~CardinalityInterface() = default;
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            :   // Conservative estimate on the lower/upper bound of the number of
+<span class="lineNum">      71 </span>            :   // calls allowed.
+<span class="lineNum">      72 </span>            :   virtual int ConservativeLowerBound() const { return 0; }
+<span class="lineNum">      73 </span>            :   virtual int ConservativeUpperBound() const { return INT_MAX; }
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :   // Returns true if and only if call_count calls will satisfy this
+<span class="lineNum">      76 </span>            :   // cardinality.
+<span class="lineNum">      77 </span>            :   virtual bool IsSatisfiedByCallCount(int call_count) const = 0;
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   // Returns true if and only if call_count calls will saturate this
+<span class="lineNum">      80 </span>            :   // cardinality.
+<span class="lineNum">      81 </span>            :   virtual bool IsSaturatedByCallCount(int call_count) const = 0;
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :   // Describes self to an ostream.
+<span class="lineNum">      84 </span>            :   virtual void DescribeTo(::std::ostream* os) const = 0;
+<span class="lineNum">      85 </span>            : };
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : // A Cardinality is a copyable and IMMUTABLE (except by assignment)
+<span class="lineNum">      88 </span>            : // object that specifies how many times a mock function is expected to
+<span class="lineNum">      89 </span>            : // be called.  The implementation of Cardinality is just a std::shared_ptr
+<span class="lineNum">      90 </span>            : // to const CardinalityInterface. Don't inherit from Cardinality!
+<span class="lineNum">      91 </span>            : class GTEST_API_ Cardinality {
+<span class="lineNum">      92 </span>            :  public:
+<span class="lineNum">      93 </span>            :   // Constructs a null cardinality.  Needed for storing Cardinality
+<span class="lineNum">      94 </span>            :   // objects in STL containers.
+<span class="lineNum">      95 </span>            :   Cardinality() = default;
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :   // Constructs a Cardinality from its implementation.
+<span class="lineNum">      98 </span>            :   explicit Cardinality(const CardinalityInterface* impl) : impl_(impl) {}
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :   // Conservative estimate on the lower/upper bound of the number of
+<span class="lineNum">     101 </span>            :   // calls allowed.
+<span class="lineNum">     102 </span>            :   int ConservativeLowerBound() const { return impl_-&gt;ConservativeLowerBound(); }
+<span class="lineNum">     103 </span>            :   int ConservativeUpperBound() const { return impl_-&gt;ConservativeUpperBound(); }
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            :   // Returns true if and only if call_count calls will satisfy this
+<span class="lineNum">     106 </span>            :   // cardinality.
+<span class="lineNum">     107 </span>            :   bool IsSatisfiedByCallCount(int call_count) const {
+<span class="lineNum">     108 </span>            :     return impl_-&gt;IsSatisfiedByCallCount(call_count);
+<span class="lineNum">     109 </span>            :   }
+<span class="lineNum">     110 </span>            : 
+<a name="111"><span class="lineNum">     111 </span>            :   // Returns true if and only if call_count calls will saturate this</a>
+<span class="lineNum">     112 </span>            :   // cardinality.
+<span class="lineNum">     113 </span><span class="lineCov">        282 :   bool IsSaturatedByCallCount(int call_count) const {</span>
+<span class="lineNum">     114 </span><span class="lineCov">        282 :     return impl_-&gt;IsSaturatedByCallCount(call_count);</span>
+<span class="lineNum">     115 </span>            :   }
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :   // Returns true if and only if call_count calls will over-saturate this
+<span class="lineNum">     118 </span>            :   // cardinality, i.e. exceed the maximum number of allowed calls.
+<span class="lineNum">     119 </span>            :   bool IsOverSaturatedByCallCount(int call_count) const {
+<span class="lineNum">     120 </span>            :     return impl_-&gt;IsSaturatedByCallCount(call_count) &amp;&amp;
+<span class="lineNum">     121 </span>            :            !impl_-&gt;IsSatisfiedByCallCount(call_count);
+<span class="lineNum">     122 </span>            :   }
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            :   // Describes self to an ostream
+<span class="lineNum">     125 </span>            :   void DescribeTo(::std::ostream* os) const { impl_-&gt;DescribeTo(os); }
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            :   // Describes the given actual call count to an ostream.
+<span class="lineNum">     128 </span>            :   static void DescribeActualCallCountTo(int actual_call_count,
+<span class="lineNum">     129 </span>            :                                         ::std::ostream* os);
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :  private:
+<span class="lineNum">     132 </span>            :   std::shared_ptr&lt;const CardinalityInterface&gt; impl_;
+<span class="lineNum">     133 </span>            : };
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : // Creates a cardinality that allows at least n calls.
+<span class="lineNum">     136 </span>            : GTEST_API_ Cardinality AtLeast(int n);
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            : // Creates a cardinality that allows at most n calls.
+<span class="lineNum">     139 </span>            : GTEST_API_ Cardinality AtMost(int n);
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : // Creates a cardinality that allows any number of calls.
+<span class="lineNum">     142 </span>            : GTEST_API_ Cardinality AnyNumber();
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : // Creates a cardinality that allows between min and max calls.
+<span class="lineNum">     145 </span>            : GTEST_API_ Cardinality Between(int min, int max);
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : // Creates a cardinality that allows exactly n calls.
+<span class="lineNum">     148 </span>            : GTEST_API_ Cardinality Exactly(int n);
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : // Creates a cardinality from its implementation.
+<span class="lineNum">     151 </span>            : inline Cardinality MakeCardinality(const CardinalityInterface* c) {
+<span class="lineNum">     152 </span>            :   return Cardinality(c);
+<span class="lineNum">     153 </span>            : }
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            : }  // namespace testing
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            : GTEST_DISABLE_MSC_WARNINGS_POP_()  //  4251
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            : #endif  // GOOGLEMOCK_INCLUDE_GMOCK_GMOCK_CARDINALITIES_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
